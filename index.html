@@ -6,20 +6,21 @@
     <title>نتيجة مدرسة الظواهرية</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; direction: rtl; margin: 0; padding: 0; }
-        
-        /* الهيدر الجديد بالصور */
         .header-container { background: white; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .images-row { display: flex; justify-content: space-around; align-items: center; max-width: 600px; margin: 0 auto 15px; }
         .logo-img { height: 80px; width: auto; border-radius: 8px; }
-        
         .school-name { color: #2c3e50; font-size: 24px; font-weight: bold; margin: 5px 0; }
         .result-title { color: #c0392b; font-size: 18px; font-weight: bold; }
-
         .card { max-width: 500px; margin: 0 auto 40px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        input { width: 80%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; text-align: center; }
-        button { background: #27ae60; color: white; border: none; padding: 12px 40px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; }
+        input { width: 85%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; text-align: center; outline: none; }
+        input:focus { border-color: #3498db; }
+        button { background: #27ae60; color: white; border: none; padding: 12px 40px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
+        button:hover { background: #219150; }
         
         #res { margin-top: 25px; display: none; }
+        /* رسالة الخطأ الشيك */
+        #errorMsg { color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 8px; margin-top: 20px; display: none; font-weight: bold; }
+        
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
         th { background-color: #3498db; color: white; }
@@ -42,6 +43,8 @@
         <input type="text" id="num" placeholder="اكتب رقم الجلوس هنا">
         <button onclick="search()">بحث عن النتيجة</button>
         
+        <div id="errorMsg">⚠️ عذراً، هذا الرقم غير موجود. تأكد من رقم الجلوس وأعد المحاولة.</div>
+
         <div id="res">
             <div id="studentData" class="student-info"></div>
             <table>
@@ -56,9 +59,18 @@
     <script>
         async function search() {
             const val = document.getElementById('num').value.trim();
+            const resDiv = document.getElementById('res');
+            const errorDiv = document.getElementById('errorMsg');
             const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5D73qMZI-_z6xXKHlVD_JEgcdrp__GCy-zkXooalXq7YbiJTVCEjsLgt89q0L_A/pub?output=csv';
             
-            if(!val) return alert("اكتب رقم الجلوس!");
+            if(!val) {
+                alert("من فضلك ادخل رقم الجلوس");
+                return;
+            }
+
+            // إخفاء النتائج والرسائل القديمة عند البحث من جديد
+            resDiv.style.display = "none";
+            errorDiv.style.display = "none";
 
             try {
                 const resp = await fetch(url);
@@ -68,17 +80,22 @@
                 const student = rows.find(r => r[0] === val || r[1] === val || r[2] === val);
 
                 if(student) {
-                    document.getElementById('res').style.display = "block";
+                    resDiv.style.display = "block";
                     document.getElementById('studentData').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>رقم الجلوس:</strong> ${val}`;
                     let content = "";
                     for(let i = 3; i < headers.length; i++) {
-                        if(headers[i].trim()) content += `<tr><td>${headers[i]}</td><td>${student[i]}</td></tr>`;
+                        if(headers[i] && headers[i].trim() !== "") {
+                            content += `<tr><td>${headers[i]}</td><td><strong>${student[i] || 'غائب'}</strong></td></tr>`;
+                        }
                     }
                     document.getElementById('tableBody').innerHTML = content;
                 } else {
-                    alert("رقم الجلوس غير موجود");
+                    // إظهار رسالة "الطالب غير موجود"
+                    errorDiv.style.display = "block";
                 }
-            } catch(e) { alert("خطأ في الاتصال"); }
+            } catch(e) { 
+                alert("حدث خطأ في الاتصال بالبيانات"); 
+            }
         }
     </script>
 </body>
