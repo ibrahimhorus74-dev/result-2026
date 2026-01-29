@@ -10,21 +10,27 @@
         .images-row { display: flex; justify-content: space-around; align-items: center; max-width: 600px; margin: 0 auto 15px; }
         .logo-img { height: 80px; width: auto; border-radius: 8px; }
         .school-name { color: #2c3e50; font-size: 24px; font-weight: bold; margin: 5px 0; }
-        .result-title { color: #c0392b; font-size: 18px; font-weight: bold; }
+        .result-title { color: #c0392b; font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+
         .card { max-width: 500px; margin: 0 auto 40px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        input { width: 85%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; text-align: center; outline: none; }
+        
+        /* تنسيق اختيار الصف */
+        select { width: 90%; padding: 12px; margin-bottom: 15px; border: 2px solid #3498db; border-radius: 8px; font-size: 18px; font-family: inherit; cursor: pointer; background: #fff; }
+        
+        input { width: 85%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; text-align: center; outline: none; }
         input:focus { border-color: #3498db; }
+        
         button { background: #27ae60; color: white; border: none; padding: 12px 40px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
         button:hover { background: #219150; }
         
         #res { margin-top: 25px; display: none; }
-        /* رسالة الخطأ الشيك */
         #errorMsg { color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 8px; margin-top: 20px; display: none; font-weight: bold; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
         th { background-color: #3498db; color: white; }
         .student-info { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: right; border-right: 5px solid #3498db; }
+        .loading { display: none; color: #3498db; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -35,15 +41,21 @@
             <img src="school.jpg" alt="مدرسة الظواهرية" class="logo-img">
         </div>
         <div class="school-name">مدرسة الظواهرية للتعليم الأساسي</div>
-        <div class="result-title">نتيجة الصف الأول الإعدادي - 2026</div>
+        <div class="result-title">نتائج الفصل الدراسي الأول - 2026</div>
     </div>
 
     <div class="card">
-        <p>برجاء إدخال رقم الجلوس للاستعلام</p>
+        <label for="grade" style="display:block; margin-bottom:8px; font-weight:bold;">اختر الصف الدراسي:</label>
+        <select id="grade">
+            <option value="1">الصف الأول الإعدادي</option>
+            <option value="2">الصف الثاني الإعدادي</option>
+        </select>
+
         <input type="text" id="num" placeholder="اكتب رقم الجلوس هنا">
         <button onclick="search()">بحث عن النتيجة</button>
         
-        <div id="errorMsg">⚠️ عذراً، هذا الرقم غير موجود. تأكد من رقم الجلوس وأعد المحاولة.</div>
+        <div id="loading" class="loading">جاري جلب النتيجة...</div>
+        <div id="errorMsg">⚠️ عذراً، هذا الرقم غير موجود في هذا الصف.</div>
 
         <div id="res">
             <div id="studentData" class="student-info"></div>
@@ -58,30 +70,36 @@
 
     <script>
         async function search() {
+            const grade = document.getElementById('grade').value;
             const val = document.getElementById('num').value.trim();
             const resDiv = document.getElementById('res');
             const errorDiv = document.getElementById('errorMsg');
-            const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5D73qMZI-_z6xXKHlVD_JEgcdrp__GCy-zkXooalXq7YbiJTVCEjsLgt89q0L_A/pub?output=csv';
-            
-            if(!val) {
-                alert("من فضلك ادخل رقم الجلوس");
-                return;
-            }
+            const loadingDiv = document.getElementById('loading');
 
-            // إخفاء النتائج والرسائل القديمة عند البحث من جديد
+            // روابط الملفات (تأكد من تحويل رابط تانية لـ CSV)
+            const url1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5D73qMZI-_z6xXKHlVD_JEgcdrp__GCy-zkXooalXq7YbiJTVCEjsLgt89q0L_A/pub?output=csv';
+            const url2 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQh7eF7_FUOpgxYV21YDNQHIfyICTaqHSgh5amFkkXTpBmJdaoo-p31BuwmOzOHT7fJj8QFZVpJk8pe/pub?output=csv';
+            
+            const targetUrl = (grade === "1") ? url1 : url2;
+
+            if(!val) return alert("من فضلك ادخل رقم الجلوس");
+
             resDiv.style.display = "none";
             errorDiv.style.display = "none";
+            loadingDiv.style.display = "block";
 
             try {
-                const resp = await fetch(url);
+                const resp = await fetch(targetUrl);
                 const text = await resp.text();
                 const rows = text.split('\n').map(r => r.split(','));
                 const headers = rows[0];
                 const student = rows.find(r => r[0] === val || r[1] === val || r[2] === val);
 
+                loadingDiv.style.display = "none";
+
                 if(student) {
                     resDiv.style.display = "block";
-                    document.getElementById('studentData').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>رقم الجلوس:</strong> ${val}`;
+                    document.getElementById('studentData').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>الصف:</strong> ${grade == "1" ? "الأول الإعدادي" : "الثاني الإعدادي"}<br><strong>رقم الجلوس:</strong> ${val}`;
                     let content = "";
                     for(let i = 3; i < headers.length; i++) {
                         if(headers[i] && headers[i].trim() !== "") {
@@ -90,10 +108,10 @@
                     }
                     document.getElementById('tableBody').innerHTML = content;
                 } else {
-                    // إظهار رسالة "الطالب غير موجود"
                     errorDiv.style.display = "block";
                 }
             } catch(e) { 
+                loadingDiv.style.display = "none";
                 alert("حدث خطأ في الاتصال بالبيانات"); 
             }
         }
