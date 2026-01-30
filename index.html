@@ -93,7 +93,7 @@
                 const text = await resp.text();
                 const rows = text.split('\n').map(r => r.split(','));
                 const headers = rows[0];
-            const student = rows.find(r => (r[0] && r[0].trim() === val) || (r[1] && r[1].trim() === val) || (r[2] && r[2].trim() === val));
+const student = rows.find(r => r[2] && r[2].toString().trim() === val);
                 loadingDiv.style.display = "none";
 
                 if(student) {
@@ -118,3 +118,4 @@
 </body>
 
 </html>
+
