@@ -93,8 +93,7 @@
                 const text = await resp.text();
                 const rows = text.split('\n').map(r => r.split(','));
                 const headers = rows[0];
-                const student = rows.find(r => r[0] === val || r[1] === val || r[2] === val);
-
+            const student = rows.find(r => (r[0] && r[0].trim() === val) || (r[1] && r[1].trim() === val) || (r[2] && r[2].trim() === val));
                 loadingDiv.style.display = "none";
 
                 if(student) {
@@ -117,4 +116,5 @@
         }
     </script>
 </body>
+
 </html>
