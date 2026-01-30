@@ -11,17 +11,13 @@
         .logo-img { height: 80px; width: auto; border-radius: 8px; }
         .school-name { color: #2c3e50; font-size: 24px; font-weight: bold; margin: 5px 0; }
         .result-title { color: #c0392b; font-size: 18px; font-weight: bold; margin-bottom: 10px; }
-
         .card { max-width: 500px; margin: 0 auto 40px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        select { width: 90%; padding: 12px; margin-bottom: 15px; border: 2px solid #3498db; border-radius: 8px; font-size: 18px; font-family: inherit; cursor: pointer; background: #fff; }
-        input { width: 85%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; text-align: center; outline: none; }
-        input:focus { border-color: #3498db; }
+        select, input { width: 90%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; text-align: center; }
+        select { border-color: #3498db; cursor: pointer; background: #fff; width: 95%; }
         button { background: #27ae60; color: white; border: none; padding: 12px 40px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
         button:hover { background: #219150; }
-        
         #res { margin-top: 25px; display: none; }
         #errorMsg { color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 8px; margin-top: 20px; display: none; font-weight: bold; }
-        
         table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
         th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
         th { background-color: #3498db; color: white; }
@@ -41,24 +37,19 @@
     </div>
 
     <div class="card">
-        <label for="grade" style="display:block; margin-bottom:8px; font-weight:bold;">اختر الصف الدراسي:</label>
+        <label style="display:block; margin-bottom:8px; font-weight:bold;">اختر الصف الدراسي:</label>
         <select id="grade">
             <option value="1">الصف الأول الإعدادي</option>
             <option value="2">الصف الثاني الإعدادي</option>
         </select>
-
         <input type="text" id="num" placeholder="اكتب رقم الجلوس هنا">
         <button onclick="search()">بحث عن النتيجة</button>
-        
         <div id="loading" class="loading">جاري جلب النتيجة...</div>
-        <div id="errorMsg">⚠️ عذراً، هذا الرقم غير موجود في هذا الصف.</div>
-
+        <div id="errorMsg">⚠️ عذراً، رقم الجلوس غير صحيح أو غير موجود.</div>
         <div id="res">
             <div id="studentData" class="student-info"></div>
             <table>
-                <thead>
-                    <tr><th>المادة</th><th>الدرجة والتقدير</th></tr>
-                </thead>
+                <thead><tr><th>المادة</th><th>الدرجة والتقدير</th></tr></thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
@@ -70,12 +61,10 @@
             const val = document.getElementById('num').value.trim();
             const resDiv = document.getElementById('res');
             const errorDiv = document.getElementById('errorMsg');
-            const loader = document.getElementById('loading'); // تم تصحيح المعرف هنا
+            const loader = document.getElementById('loading');
 
-            // روابط الشيتات (استبدل الروابط التالية بالروابط الخاصة بك)
             const url1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5D73qMZI-_z6xXKHlVD_JEgcdrp__GCy-zkXooalXq7YbiJTVCEjsLgt89q0L_A/pub?output=csv'; 
             const url2 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQh7eF7_FUOpgxYV21YDNQHIfyICTaqHSgh5amFkkXTpBmJdaoo-p31BuwmOzOHT7fJj8QFZVpJk8pe/pub?output=csv';
-            
             const targetUrl = (grade === "1") ? url1 : url2;
 
             if(!val) return alert("من فضلك ادخل رقم الجلوس");
@@ -89,8 +78,6 @@
                 const text = await resp.text();
                 const rows = text.split('\n').map(r => r.split(','));
                 const headers = rows[0];
-                
-                // البحث في العمود C (إندكس 2) عن رقم الجلوس
                 const student = rows.find(r => r[2] && r[2].toString().trim() === val);
 
                 loader.style.display = "none";
@@ -103,62 +90,52 @@
                         <strong>رقم الجلوس:</strong> ${val}`;
                     
                     let content = "";
-                    for(let content = "";
-            for(let i = 3; i < headers.length; i++) {
-                if(headers[i] && headers[i].trim() !== "") {
-                    let degree = parseFloat(student[i]);
-                    let estimation = "";
-                    let textColor = "#2c3e50"; 
-                    let rowStyle = ""; 
-                    let headerName = headers[i].trim();
+                    for(let i = 3; i < headers.length; i++) {
+                        let headerName = headers[i] ? headers[i].trim() : "";
+                        if(headerName !== "") {
+                            let degree = parseFloat(student[i]);
+                            let estimation = "";
+                            let textColor = "#2c3e50"; 
+                            let rowStyle = ""; 
 
-                    if (isNaN(degree)) {
-                        estimation = "غائب";
-                        textColor = "#7f8c8d";
-                    } 
-                    // --- تريكة المجموع الكلي (من 500) ---
-                    else if (headerName === "المجموع" || headerName === "المجموع الكلي") {
-                        if (degree >= 450) { estimation = "ممتاز"; textColor = "#1a5fb4"; }
-                        else if (degree >= 400) { estimation = "جيد جداً"; textColor = "#26a269"; }
-                        else if (degree >= 325) { estimation = "جيد"; textColor = "#d4a017"; }
-                        else if (degree >= 250) { estimation = "مقبول"; textColor = "#855e42"; }
-                        else { 
-                            estimation = "ضعيف"; textColor = "#ffffff"; 
-                            rowStyle = "background-color: #c0392b !important;"; 
+                            if (isNaN(degree)) {
+                                estimation = "غائب";
+                                textColor = "#7f8c8d";
+                            } 
+                            // حساب المجموع الكلي (من 500)
+                            else if (headerName.includes("المجموع")) {
+                                if (degree >= 450) { estimation = "ممتاز"; textColor = "#1a5fb4"; }
+                                else if (degree >= 400) { estimation = "جيد جداً"; textColor = "#26a269"; }
+                                else if (degree >= 325) { estimation = "جيد"; textColor = "#d4a017"; }
+                                else if (degree >= 250) { estimation = "مقبول"; textColor = "#855e42"; }
+                                else { estimation = "ضعيف"; textColor = "white"; rowStyle = "background-color: #c0392b !important;"; }
+                            }
+                            // حساب المواد العادية (من 100)
+                            else {
+                                if (degree >= 85) { estimation = "ممتاز"; textColor = "#1a5fb4"; }
+                                else if (degree >= 75) { estimation = "جيد جداً"; textColor = "#26a269"; }
+                                else if (degree >= 65) { estimation = "جيد"; textColor = "#d4a017"; }
+                                else if (degree >= 50) { estimation = "مقبول"; textColor = "#855e42"; }
+                                else { estimation = "ضعيف"; textColor = "white"; rowStyle = "background-color: #c0392b !important;"; }
+                            }
+
+                            content += `<tr style="${rowStyle}">
+                                <td style="font-weight: bold; ${rowStyle?'color:white':''}">${headerName}</td>
+                                <td style="color: ${textColor}; font-weight: bold;">
+                                    ${student[i]} <span style="font-size: 0.8em; margin-right: 8px;">[${estimation}]</span>
+                                </td>
+                            </tr>`;
                         }
                     }
-                    // --- حسبة المواد العادية (من 100) ---
-                    else {
-                        if (degree >= 85) { estimation = "ممتاز"; textColor = "#1a5fb4"; }
-                        else if (degree >= 75) { estimation = "جيد جداً"; textColor = "#26a269"; }
-                        else if (degree >= 65) { estimation = "جيد"; textColor = "#d4a017"; }
-                        else if (degree >= 50) { estimation = "مقبول"; textColor = "#855e42"; }
-                        else { 
-                            estimation = "ضعيف"; textColor = "#ffffff"; 
-                            rowStyle = "background-color: #c0392b !important;"; 
-                        }
-                    }
-
-                    content += `
-                    <tr style="${rowStyle}">
-                        <td style="font-weight: bold; color: ${rowStyle ? 'white' : 'inherit'}">${headers[i]}</td>
-                        <td style="color: ${textColor}; font-weight: bold;">
-                            ${student[i]} 
-                            <span style="font-size: 0.85em; margin-right: 10px; border-right: 2px solid; padding-right: 8px;">${estimation}</span>
-                        </td>
-                    </tr>`;
-                }
-            }
                     document.getElementById('tableBody').innerHTML = content;
                 } else {
                     errorDiv.style.display = "block";
                 }
             } catch(e) { 
                 loader.style.display = "none";
-                alert("تعذر الاتصال بالبيانات"); 
+                alert("حدث خطأ في جلب البيانات، يرجى المحاولة لاحقاً."); 
             }
         }
     </script>
 </body>
 </html>
-
