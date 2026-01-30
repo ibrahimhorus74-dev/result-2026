@@ -70,52 +70,93 @@
 
     <script>
         async function search() {
-            const grade = document.getElementById('grade').value;
-            const val = document.getElementById('num').value.trim();
-            const resDiv = document.getElementById('res');
-            const errorDiv = document.getElementById('errorMsg');
-            const loadingDiv = document.getElementById('loading');
+    const grade = document.getElementById('grade').value;
+    const val = document.getElementById('num').value.trim();
+    const resDiv = document.getElementById('res');
+    const errorDiv = document.getElementById('errorMsg');
+    const loader = document.getElementById('loader');
 
-            // روابط الملفات (تأكد من تحويل رابط تانية لـ CSV)
-            const url1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5D73qMZI-_z6xXKHlVD_JEgcdrp__GCy-zkXooalXq7YbiJTVCEjsLgt89q0L_A/pub?output=csv';
-            const url2 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQh7eF7_FUOpgxYV21YDNQHIfyICTaqHSgh5amFkkXTpBmJdaoo-p31BuwmOzOHT7fJj8QFZVpJk8pe/pub?output=csv';
+    // روابط الشيتات بتاعتك (تأكد إنها صحيحة)
+    const url1 = 'رابط_شيت_اولى_هنا'; 
+    const url2 = 'رابط_شيت_تانية_هنا';
+    
+    const targetUrl = (grade === "1") ? url1 : url2;
+
+    if(!val) return alert("من فضلك ادخل رقم الجلوس");
+
+    resDiv.style.display = "none";
+    errorDiv.style.display = "none";
+    loader.style.display = "block";
+
+    try {
+        const resp = await fetch(targetUrl);
+        const text = await resp.text();
+        const rows = text.split('\n').map(r => r.split(','));
+        const headers = rows[0];
+        
+        // البحث في العمود C (رقم الجلوس)
+        const student = rows.find(r => r[2] && r[2].toString().trim() === val);
+
+        loader.style.display = "none";
+
+        if(student) {
+            resDiv.style.display = "block";
+            document.getElementById('studentData').innerHTML = `
+                <strong>الاسم:</strong> ${student[1]}<br>
+                <strong>الصف:</strong> ${grade == "1" ? "الأول الإعدادي" : "الثاني الإعدادي"}<br>
+                <strong>رقم الجلوس:</strong> ${val}`;
             
-            const targetUrl = (grade === "1") ? url1 : url2;
+            let content = "";
+            for(let i = 3; i < headers.length; i++) {
+                if(headers[i] && headers[i].trim() !== "") {
+                    let degree = parseFloat(student[i]);
+                    let estimation = "";
+                    let textColor = "#2c3e50"; 
+                    let rowStyle = ""; 
 
-            if(!val) return alert("من فضلك ادخل رقم الجلوس");
-
-            resDiv.style.display = "none";
-            errorDiv.style.display = "none";
-            loadingDiv.style.display = "block";
-
-            try {
-                const resp = await fetch(targetUrl);
-                const text = await resp.text();
-                const rows = text.split('\n').map(r => r.split(','));
-                const headers = rows[0];
-const student = rows.find(r => r[2] && r[2].toString().trim() === val);
-                loadingDiv.style.display = "none";
-
-                if(student) {
-                    resDiv.style.display = "block";
-                    document.getElementById('studentData').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>الصف:</strong> ${grade == "1" ? "الأول الإعدادي" : "الثاني الإعدادي"}<br><strong>رقم الجلوس:</strong> ${val}`;
-                    let content = "";
-                    for(let i = 3; i < headers.length; i++) {
-                        if(headers[i] && headers[i].trim() !== "") {
-                            content += `<tr><td>${headers[i]}</td><td><strong>${student[i] || 'غائب'}</strong></td></tr>`;
-                        }
+                    if (isNaN(degree)) {
+                        estimation = "غائب";
+                        textColor = "#7f8c8d";
+                    } else if (degree >= 85) {
+                        estimation = "ممتاز";
+                        textColor = "#1a5fb4"; 
+                    } else if (degree >= 75) {
+                        estimation = "جيد جداً";
+                        textColor = "#26a269"; 
+                    } else if (degree >= 65) {
+                        estimation = "جيد";
+                        textColor = "#d4a017"; 
+                    } else if (degree >= 50) {
+                        estimation = "مقبول";
+                        textColor = "#855e42"; 
+                    } else {
+                        estimation = "ضعيف";
+                        textColor = "#ffffff"; 
+                        rowStyle = "background-color: #c0392b !important;"; 
                     }
-                    document.getElementById('tableBody').innerHTML = content;
-                } else {
-                    errorDiv.style.display = "block";
+
+                    content += `
+                    <tr style="${rowStyle}">
+                        <td style="font-weight: bold; color: ${rowStyle ? 'white' : 'inherit'}">${headers[i]}</td>
+                        <td style="color: ${textColor}; font-weight: bold;">
+                            ${student[i]} 
+                            <span style="font-size: 0.85em; margin-right: 10px; border-right: 2px solid; padding-right: 8px;">${estimation}</span>
+                        </td>
+                    </tr>`;
                 }
-            } catch(e) { 
-                loadingDiv.style.display = "none";
-                alert("حدث خطأ في الاتصال بالبيانات"); 
             }
+            document.getElementById('tableBody').innerHTML = content;
+        } else {
+            errorDiv.style.display = "block";
         }
+    } catch(e) { 
+        loader.style.display = "none";
+        alert("تعذر الاتصال بالبيانات"); 
+    }
+}
     </script>
 </body>
 
 </html>
+
 
