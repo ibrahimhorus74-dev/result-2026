@@ -103,44 +103,52 @@
                         <strong>رقم الجلوس:</strong> ${val}`;
                     
                     let content = "";
-                    for(let i = 3; i < headers.length; i++) {
-                        if(headers[i] && headers[i].trim() !== "") {
-                            let degree = parseFloat(student[i]);
-                            let estimation = "";
-                            let textColor = "#2c3e50"; 
-                            let rowStyle = ""; 
+                    for(let content = "";
+            for(let i = 3; i < headers.length; i++) {
+                if(headers[i] && headers[i].trim() !== "") {
+                    let degree = parseFloat(student[i]);
+                    let estimation = "";
+                    let textColor = "#2c3e50"; 
+                    let rowStyle = ""; 
+                    let headerName = headers[i].trim();
 
-                            if (isNaN(degree)) {
-                                estimation = "غائب";
-                                textColor = "#7f8c8d";
-                            } else if (degree >= 85) {
-                                estimation = "ممتاز";
-                                textColor = "#1a5fb4"; 
-                            } else if (degree >= 75) {
-                                estimation = "جيد جداً";
-                                textColor = "#26a269"; 
-                            } else if (degree >= 65) {
-                                estimation = "جيد";
-                                textColor = "#d4a017"; 
-                            } else if (degree >= 50) {
-                                estimation = "مقبول";
-                                textColor = "#855e42"; 
-                            } else {
-                                estimation = "ضعيف";
-                                textColor = "#ffffff"; 
-                                rowStyle = "background-color: #c0392b !important;"; 
-                            }
-
-                            content += `
-                            <tr style="${rowStyle}">
-                                <td style="font-weight: bold; color: ${rowStyle ? 'white' : 'inherit'}">${headers[i]}</td>
-                                <td style="color: ${textColor}; font-weight: bold;">
-                                    ${student[i]} 
-                                    <span style="font-size: 0.85em; margin-right: 10px; border-right: 2px solid; padding-right: 8px;">${estimation}</span>
-                                </td>
-                            </tr>`;
+                    if (isNaN(degree)) {
+                        estimation = "غائب";
+                        textColor = "#7f8c8d";
+                    } 
+                    // --- تريكة المجموع الكلي (من 500) ---
+                    else if (headerName === "المجموع" || headerName === "المجموع الكلي") {
+                        if (degree >= 450) { estimation = "ممتاز"; textColor = "#1a5fb4"; }
+                        else if (degree >= 400) { estimation = "جيد جداً"; textColor = "#26a269"; }
+                        else if (degree >= 325) { estimation = "جيد"; textColor = "#d4a017"; }
+                        else if (degree >= 250) { estimation = "مقبول"; textColor = "#855e42"; }
+                        else { 
+                            estimation = "ضعيف"; textColor = "#ffffff"; 
+                            rowStyle = "background-color: #c0392b !important;"; 
                         }
                     }
+                    // --- حسبة المواد العادية (من 100) ---
+                    else {
+                        if (degree >= 85) { estimation = "ممتاز"; textColor = "#1a5fb4"; }
+                        else if (degree >= 75) { estimation = "جيد جداً"; textColor = "#26a269"; }
+                        else if (degree >= 65) { estimation = "جيد"; textColor = "#d4a017"; }
+                        else if (degree >= 50) { estimation = "مقبول"; textColor = "#855e42"; }
+                        else { 
+                            estimation = "ضعيف"; textColor = "#ffffff"; 
+                            rowStyle = "background-color: #c0392b !important;"; 
+                        }
+                    }
+
+                    content += `
+                    <tr style="${rowStyle}">
+                        <td style="font-weight: bold; color: ${rowStyle ? 'white' : 'inherit'}">${headers[i]}</td>
+                        <td style="color: ${textColor}; font-weight: bold;">
+                            ${student[i]} 
+                            <span style="font-size: 0.85em; margin-right: 10px; border-right: 2px solid; padding-right: 8px;">${estimation}</span>
+                        </td>
+                    </tr>`;
+                }
+            }
                     document.getElementById('tableBody').innerHTML = content;
                 } else {
                     errorDiv.style.display = "block";
@@ -153,3 +161,4 @@
     </script>
 </body>
 </html>
+
