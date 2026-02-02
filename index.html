@@ -3,96 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نتائج مدرسة الظواهرية - إدارة الحسينية</title>
+    <title>بوابة نتائج مدرسة الظواهرية</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; direction: rtl; margin: 0; padding: 0; }
-        .header { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 40px 10px; text-align: center; border-bottom: 5px solid #d4af37; }
-        .gift { color: #d4af37; font-weight: bold; margin-top: 15px; font-size: 19px; border: 1px dashed #d4af37; display: inline-block; padding: 5px 20px; border-radius: 50px; }
-        .card { max-width: 550px; margin: -25px auto 40px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); text-align: center; }
-        input { width: 100%; padding: 15px; margin: 25px 0; border: 2px solid #eee; border-radius: 12px; font-size: 20px; text-align: center; box-sizing: border-box; }
-        .search-btn { background: #27ae60; color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-size: 19px; font-weight: bold; width: 100%; transition: 0.3s; }
-        #res { margin-top: 30px; display: none; text-align: right; }
-        .student-info { background: #f8f9fa; padding: 20px; border-radius: 15px; border-right: 8px solid #d4af37; margin-bottom: 25px; font-size: 19px; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; }
-        th, td { border: 1px solid #f0f0f0; padding: 14px; text-align: center; }
+        .header { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 30px 10px; text-align: center; border-bottom: 5px solid #d4af37; }
+        .gift { color: #d4af37; font-weight: bold; margin-top: 10px; font-size: 18px; border: 1px dashed #d4af37; display: inline-block; padding: 5px 15px; border-radius: 50px; }
+        .card { max-width: 500px; margin: -20px auto 40px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 20px; text-align: center; box-sizing: border-box; }
+        button { background: #27ae60; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; }
+        #res { margin-top: 25px; display: none; text-align: right; }
+        .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid #d4af37; margin-bottom: 20px; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
         th { background: #1e3c72; color: white; }
-        .loader { display: none; color: #1a5fb4; font-weight: bold; margin: 20px 0; }
+        .loader { display: none; margin: 20px 0; color: #1e3c72; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>نتائج امتحانات 2026 - بوابة مدرسة الظواهرية</h1>
-        <div class="gift">إهداء لطلاب إدارة الحسينية التعليمية 🏆</div>
+<div class="header">
+    <h1>نتائج مدرسة الظواهرية والشهادة الإعدادية</h1>
+    <div class="gift">إهداء لطلاب إدارة الحسينية التعليمية 🏆</div>
+</div>
+
+<div class="card">
+    <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
+    <button onclick="search()">استعلام عن النتيجة</button>
+    <div id="loader" class="loader">🔍 جاري فحص سجلات الإدارة...</div>
+    <div id="res">
+        <div id="info" class="info-box"></div>
+        <table>
+            <thead><tr><th>المادة</th><th>الدرجة</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
     </div>
+</div>
 
-    <div class="card">
-        <p style="color: #666; font-weight: bold;">(بحث موحد لصفوف النقل والشهادة الإعدادية)</p>
-        <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
-        <button class="search-btn" onclick="getResults()">عرض النتيجة الآن</button>
-        
-        <div id="loader" class="loader">🔍 جاري سحب البيانات من السيرفر...</div>
+<script>
+    const csvUrl = 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHUWJ5YjV3ek85bmlNQWpiWkwyeWxUMmMzQmhPc01fRkpZUVFnRGhNMHFxaTRFMGZYc3dmWnM1ZzlRV2tHTzdoZEtYQnQyUEJ2Wi9wdWI/Z2lkPTAmc2luZ2xlPXRydWUmb3V0cHV0PWNzdi';
 
-        <div id="res">
-            <div id="info" class="student-info"></div>
-            <table>
-                <thead><tr><th>المادة</th><th>الدرجة</th></tr></thead>
-                <tbody id="tableData"></tbody>
-            </table>
-        </div>
-    </div>
+    async function search() {
+        const seat = document.getElementById('seatInput').value.trim();
+        const loader = document.getElementById('loader');
+        const resDiv = document.getElementById('res');
 
-    <script>
-        // الرابط الموحد للإدارة (تأكد إنه من نوع CSV)
-        const csvLink = 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHUWJ5YjV3ek85bmlNQWpiWkwyeWxUMmMzQmhPc01fRkpZUVFnRGhNMHFxaTRFMGZYc3dmWnM1ZzlRV2tHTzdoZEtYQnQyUEJ2Wi9wdWI/Z2lkPTAmc2luZ2xlPXRydWUmb3V0cHV0PWNzdi';
+        if(!seat) return alert("اكتب رقم الجلوس");
+        loader.style.display = "block";
+        resDiv.style.display = "none";
 
-        async function getResults() {
-            const seat = document.getElementById('seatInput').value.trim();
-            const loader = document.getElementById('loader');
-            const resDiv = document.getElementById('res');
+        try {
+            const resp = await fetch(atob(csvUrl));
+            const text = await resp.text();
+            // تقسيم السطور وتنظيفها تماماً من أي مسافات أو رموز مخفية
+            const rows = text.split('\n').map(r => r.split(',').map(c => c.trim().replace(/[\u200B-\u200D\uFEFF]/g, "")));
+            
+            // البحث عن السطر اللي فيه رقم الجلوس في أي مكان
+            const student = rows.find(r => r.some(cell => cell == seat));
 
-            if(!seat) return alert("يرجى كتابة رقم الجلوس");
+            loader.style.display = "none";
 
-            loader.style.display = "block";
-            resDiv.style.display = "none";
-
-            try {
-                const response = await fetch(atob(csvLink));
-                const text = await response.text();
+            if(student) {
+                resDiv.style.display = "block";
+                // بما إننا مش ضامنين رقم العمود، هنعرض البيانات اللي لقيناها
+                document.getElementById('info').innerHTML = `
+                    <strong>الاسم:</strong> ${student[1] || 'موجود بالجدول'}<br>
+                    <strong>رقم الجلوس:</strong> ${seat}
+                `;
                 
-                // تنظيف الملف من أي رموز مخفية
-                const cleanText = text.replace(/^\uFEFF/, "");
-                const rows = cleanText.split('\n').filter(line => line.trim() !== "").map(r => r.split(',').map(cell => cell.trim()));
-                const headers = rows[0];
-                
-                // البحث في أول عمود عن رقم الجلوس
-                const student = rows.find(r => r[0] == seat);
-
-                loader.style.display = "none";
-
-                if(student) {
-                    resDiv.style.display = "block";
-                    document.getElementById('info').innerHTML = `
-                        <strong>الاسم:</strong> ${student[1]}<br>
-                        <strong>رقم الجلوس:</strong> ${student[0]}<br>
-                        <strong>الإدارة/المدرسة:</strong> ${student[2] || ''} ${student[3] || ''}
-                    `;
-                    
-                    let html = "";
-                    for(let i = 4; i < headers.length; i++) {
-                        if(headers[i]) {
-                            html += `<tr><td><b>${headers[i]}</b></td><td>${student[i] || '0'}</td></tr>`;
-                        }
+                let html = "";
+                // هنبدأ نعرض من تالت عمود عشان نتخطى الجلوس والاسم
+                for(let i = 2; i < rows[0].length; i++) {
+                    if(rows[0][i]) {
+                        html += `<tr><td><b>${rows[0][i]}</b></td><td>${student[i] || '0'}</td></tr>`;
                     }
-                    document.getElementById('tableData').innerHTML = html;
-                } else {
-                    alert("⚠️ عذراً، رقم الجلوس (" + seat + ") غير مسجل حالياً.");
                 }
-            } catch(e) {
-                loader.style.display = "none";
-                alert("❌ فشل الاتصال بقاعدة البيانات. تأكد من نشر الشيت بصيغة CSV.");
+                document.getElementById('tableBody').innerHTML = html;
+            } else {
+                alert("⚠️ الرقم " + seat + " غير موجود. تأكد من صحة الرقم.");
             }
+        } catch(e) {
+            loader.style.display = "none";
+            alert("❌ مشكلة في الوصول للملف. تأكد من Publish to web بصيغة CSV.");
         }
-    </script>
+    }
+</script>
 </body>
 </html>
