@@ -10,7 +10,7 @@
         .gift { color: #d4af37; font-weight: bold; margin-top: 10px; font-size: 18px; border: 1px dashed #d4af37; display: inline-block; padding: 8px 25px; border-radius: 50px; background: rgba(0,0,0,0.2); }
         .card { max-width: 500px; margin: -20px auto 40px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
         input { width: 100%; padding: 15px; margin: 15px 0 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 20px; text-align: center; box-sizing: border-box; }
-        button { background: #27ae60; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
+        button { background: #27ae60; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; margin-bottom: 10px; }
         #res { margin-top: 25px; display: none; text-align: right; }
         .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid #d4af37; margin-bottom: 20px; font-size: 17px; }
         table { width: 100%; border-collapse: collapse; background: white; }
@@ -21,6 +21,8 @@
         .grade-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; color: white; font-size: 14px; margin-top: 5px; }
         .excelent { background-color: #27ae60; } .very-good { background-color: #2980b9; } 
         .good { background-color: #f39c12; } .pass { background-color: #95a5a6; } .fail { background-color: #e74c3c; }
+        .print-btn { background: #34495e; font-size: 14px; padding: 10px; }
+        @media print { .header, .card input, button, .gift { display: none; } .card { box-shadow: none; margin: 0; max-width: 100%; } }
     </style>
 </head>
 <body>
@@ -33,36 +35,37 @@
 <div class="card">
     <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
     <button onclick="getResults()">عرض النتيجة الآن</button>
+    
     <div id="res">
         <div id="info" class="info-box"></div>
         <table>
             <thead><tr><th>المادة</th><th>الدرجة</th></tr></thead>
             <tbody id="tableBody"></tbody>
         </table>
+        <br>
+        <button class="print-btn" onclick="window.print()">طباعة الشهادة 🖨️</button>
     </div>
 </div>
 
 <script>
     const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbnUGQbyb5wzO9niMAjbZL2ylT2c3BhOsM_FJfQQgDhM0qqi4E0fXswfZs5g9QWkGO7hdKXBt2PBvZ/pub?output=csv';
+    const appTitle = "رابط الشهادة الاعدادية لادارة الحسينية 2026";
 
     function checkFail(subject, score) {
         let val = parseFloat(score);
         if (isNaN(val)) return false;
-        
-        // فحص المواد حسب شروطك
         if (subject.includes("عربى") && val < 20) return true;
         if (subject.includes("انجليزى") && val < 15) return true;
         if (subject.includes("رياض") && val < 15) return true;
         if (subject.includes("علوم") && val < 10) return true;
         if (subject.includes("دراسات") && val < 10) return true;
-        
         return false;
     }
 
     function calculateGrade(score) {
         let total = parseFloat(score);
         if (isNaN(total)) return { text: "", class: "" };
-        let percentage = (total / 140) * 100; // تم التعديل لـ 140 درجة للترم الواحد
+        let percentage = (total / 140) * 100;
         if (percentage >= 85) return { text: "امتياز 🌟", class: "excelent" };
         if (percentage >= 75) return { text: "جيد جداً ✨", class: "very-good" };
         if (percentage >= 65) return { text: "جيد 👍", class: "good" };
@@ -73,7 +76,8 @@
     async function getResults() {
         const seat = document.getElementById('seatInput').value.trim();
         const resDiv = document.getElementById('res');
-        if(!seat) return alert("اكتب رقم الجلوس");
+        
+        if(!seat) return alert(`${appTitle}\n\n⚠️ من فضلك ادخل رقم الجلوس أولاً`);
 
         try {
             const response = await fetch(dataUrl);
@@ -90,7 +94,6 @@
                         let val = student[i] || '0';
                         let isRed = checkFail(headers[i], val);
                         let isTotal = headers[i].includes("مجموع");
-                        
                         let tdClass = isRed ? 'class="fail-grade"' : '';
                         
                         if(isTotal) {
@@ -101,10 +104,14 @@
                         }
                     }
                 }
-                document.getElementById('info').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>المدرسة:</strong> ${student[3]}`;
+                document.getElementById('info').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>المدرسة:</strong> ${student[3]}<br><strong>رقم الجلوس:</strong> ${seat}`;
                 document.getElementById('tableBody').innerHTML = html;
-            } else { alert("رقم الجلوس غير موجود"); }
-        } catch(e) { alert("خطأ في الاتصال"); }
+            } else { 
+                alert(`${appTitle}\n\n⚠️ عذراً، لم نجد رقم الجلوس (${seat}) في سجلات الإدارة.`); 
+            }
+        } catch(e) { 
+            alert(`${appTitle}\n\n❌ فشل الاتصال بقاعدة البيانات.`); 
+        }
     }
 </script>
 </body>
