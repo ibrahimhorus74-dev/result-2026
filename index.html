@@ -60,7 +60,6 @@
 </div>
 
 <script>
-    // روابط مشفرة Base64 لحماية ملفات البيانات
     const _0xLinks = {
         prep3: 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHOWJ5YjV3ek85bmlNQWpiWkwyeWxUMmNCaE9zTV9GSmZRUWdEaE0wcWlpNEUwZlhzd2ZaczVnOVFXa0dPN2hkS1hCdDJQQnZaL3B1Yj9vdXRwdXQ9Y3N2',
         prep2: 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlFoN2VGN19GVU9wZ3hWMjFZRE5RSGZ5SUN0YXFIU2doNWFtRmtrWFRwQm1KZGFvby1wMzFCdXdtT3pPSFRmSmpIUUZaVnBKazhwZS9wdWI/b3V0cHV0PWNzdg==',
@@ -107,8 +106,52 @@
         resDiv.style.display = "none";
 
         try {
-            // فك تشفير الرابط عند الاستدعاء فقط
             const _url = atob(_0xLinks[currentMode]);
             const response = await fetch(_url);
             const text = await response.text();
-            const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell
+            const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim().replace(/^["']|["']$/g, '')));
+            const headers = rows[0];
+            
+            let student = null;
+            let startCol = 4; // القيمة الافتراضية لبداية المواد
+
+            if(currentMode === 'prep3') {
+                student = rows.find((r, index) => index > 0 && r[0] === seat);
+                startCol = 4; // في الإعدادية المواد تبدأ من العمود E (Index 4)
+            } else {
+                student = rows.find((r, index) => index > 0 && r[2] === seat);
+                startCol = 3; // في النقل مادة العربي تبدأ من العمود D (Index 3)
+            }
+
+            loader.style.display = "none";
+
+            if(student) {
+                resDiv.style.display = "block";
+                let html = "";
+                // تعديل الحلقة لتبدأ من مادة العربي بناءً على نوع الصف
+                for(let i = startCol; i < headers.length; i++) {
+                    if(headers[i] && headers[i] !== "" && !headers[i].includes("مسلسل")) {
+                        let isTotal = headers[i].includes("مجموع") || headers[i].includes("المجموع");
+                        html += `<tr class="${isTotal ? 'total-row' : ''}"><td><b>${headers[i]}</b></td><td>${student[i] || '0'}</td></tr>`;
+                    }
+                }
+                
+                let infoHtml = `<strong>الاسم:</strong> ${student[1]}<br>`;
+                if(currentMode === 'prep3') {
+                    infoHtml += `<strong>المدرسة:</strong> ${student[3] || 'غير متوفر'}<br>`;
+                }
+                infoHtml += `<strong>رقم الجلوس:</strong> ${seat}`;
+                
+                document.getElementById('info').innerHTML = infoHtml;
+                document.getElementById('tableBody').innerHTML = html;
+            } else { 
+                alert("من فضلك اعد ادخال رقم الجلوس");
+            }
+        } catch(e) { 
+            loader.style.display = "none"; 
+            alert("❌ خطأ في الاتصال بالبيانات."); 
+        }
+    }
+</script>
+</body>
+</html>
