@@ -6,94 +6,106 @@
     <title>نتيجة الشهادة الإعدادية - إدارة الحسينية</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; direction: rtl; margin: 0; padding: 0; }
-        .header { background: linear-gradient(135deg, #1a5fb4, #111); color: white; padding: 40px 10px; text-align: center; border-bottom: 5px solid #d4af37; }
-        .gift { color: #d4af37; font-weight: bold; margin-top: 15px; font-size: 18px; border: 1px dashed #d4af37; display: inline-block; padding: 8px 25px; border-radius: 50px; background: rgba(0,0,0,0.2); }
-        .card { max-width: 550px; margin: -30px auto 40px; background: white; padding: 35px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); text-align: center; }
-        input { width: 100%; padding: 18px; margin: 15px 0 20px; border: 2px solid #eee; border-radius: 12px; font-size: 22px; text-align: center; box-sizing: border-box; }
-        button { background: #27ae60; color: white; border: none; padding: 18px; border-radius: 12px; cursor: pointer; font-size: 20px; font-weight: bold; width: 100%; transition: 0.3s; }
+        .header { background: linear-gradient(135deg, #1a5fb4, #111); color: white; padding: 30px 10px; text-align: center; border-bottom: 5px solid #d4af37; }
+        .gift { color: #d4af37; font-weight: bold; margin-top: 10px; font-size: 18px; border: 1px dashed #d4af37; display: inline-block; padding: 8px 25px; border-radius: 50px; background: rgba(0,0,0,0.2); }
+        .card { max-width: 500px; margin: -20px auto 40px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        input { width: 100%; padding: 15px; margin: 15px 0 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 20px; text-align: center; box-sizing: border-box; }
+        button { background: #27ae60; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
         button:hover { background: #219150; transform: translateY(-2px); }
         #loader { display: none; margin: 20px 0; color: #1a5fb4; font-weight: bold; }
-        #res { margin-top: 30px; display: none; text-align: right; }
-        .student-info { background: #f8f9fa; padding: 20px; border-radius: 15px; border-right: 8px solid #d4af37; margin-bottom: 25px; font-size: 19px; line-height: 1.8; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        th, td { border: 1px solid #f0f0f0; padding: 14px; text-align: center; }
+        #res { margin-top: 25px; display: none; text-align: right; }
+        .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 8px solid #d4af37; margin-bottom: 20px; font-size: 17px; line-height: 1.6; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
         th { background: #1a5fb4; color: white; }
         .total-row { background: #fff9e6; font-weight: bold; color: #c0392b; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>نتائج الشهادة الإعدادية 2026</h1>
-        <div class="gift">إهداء من مدرسة الظواهرية للتعليم الأساسي 🏆</div>
+<div class="header">
+    <h1>بوابة نتائج الشهادة الإعدادية 2026</h1>
+    <div class="gift">إهداء من مدرسة الظواهرية للتعليم الأساسي 🏆</div>
+</div>
+
+<div class="card">
+    <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
+    <button onclick="getResults()">عرض النتيجة الآن</button>
+    <div id="loader">🔍 جاري استخراج الدرجات من السجلات...</div>
+    
+    <div id="res">
+        <div id="info" class="info-box"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>المادة</th>
+                    <th>الدرجة</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
     </div>
+</div>
 
-    <div class="card">
-        <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
-        <button onclick="getResults()">عرض النتيجة الآن</button>
-        <div id="loader">🔍 جاري جلب البيانات من السجل...</div>
-        <div id="res">
-            <div id="info" class="student-info"></div>
-            <table>
-                <thead><tr><th>المادة</th><th>الدرجة</th></tr></thead>
-                <tbody id="tableData"></tbody>
-            </table>
-        </div>
-    </div>
+<script>
+    // الرابط المباشر لبيانات الـ CSV التي قمت بنشرها
+    const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbnUGQbyb5wzO9niMAjbZL2ylT2c3BhOsM_FJfQQgDhM0qqi4E0fXswfZs5g9QWkGO7hdKXBt2PBvZ/pub?output=csv';
 
-    <script>
-        const csvLink = 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHUWJ5YjV3ek85bmlNQWpiWkwyeWxUMmMzQmhPc01fRkpZUVFnRGhNMHFxaTRFMGZYc3dmWnM1ZzlRV2tHTzdoZEtYQnQyUEJ2Wi9wdWI/Z2lkPTAmc2luZ2xlPXRydWUmb3V0cHV0PWNzdi';
+    async function getResults() {
+        const seat = document.getElementById('seatInput').value.trim();
+        const loader = document.getElementById('loader');
+        const resDiv = document.getElementById('res');
 
-        async function getResults() {
-            const seat = document.getElementById('seatInput').value.trim();
-            const loader = document.getElementById('loader');
-            const resDiv = document.getElementById('res');
+        if(!seat) return alert("من فضلك اكتب رقم الجلوس أولاً");
+        
+        loader.style.display = "block";
+        resDiv.style.display = "none";
 
-            if(!seat) return alert("يرجى إدخال رقم الجلوس");
-            loader.style.display = "block";
-            resDiv.style.display = "none";
+        try {
+            const response = await fetch(dataUrl);
+            const text = await response.text();
+            
+            // تقسيم النص إلى سطور ثم إلى أعمدة
+            const rows = text.split('\n').map(row => row.split(',').map(cell => cell.trim().replace(/^["']|["']$/g, '')));
+            const headers = rows[0]; // الصف الأول (العناوين)
+            
+            // البحث عن رقم الجلوس في العمود الأول (Index 0)
+            const student = rows.find(r => r[0] == seat);
 
-            try {
-                const response = await fetch(atob(csvLink));
-                const text = await response.text();
+            loader.style.display = "none";
+
+            if(student) {
+                resDiv.style.display = "block";
                 
-                // تنظيف الملف من أي رموز مخفية وتقسيم السطور
-                const cleanText = text.replace(/^\uFEFF/, "").trim();
-                const rows = cleanText.split('\n').map(r => r.split(',').map(cell => cell.trim().replace(/['"]+/g, '')));
+                // عرض بيانات الطالب (الاسم في العمود 2، الإدارة 3، المدرسة 4)
+                document.getElementById('info').innerHTML = `
+                    <strong>الاسم:</strong> ${student[1] || 'غير مسجل'}<br>
+                    <strong>رقم الجلوس:</strong> ${student[0]}<br>
+                    <strong>المدرسة:</strong> ${student[3] || 'إدارة الحسينية'}
+                `;
                 
-                const headers = rows[0]; // الصف الأول هو الرؤوس
-                
-                // البحث عن رقم الجلوس في أول عمود (Index 0)
-                const student = rows.find(r => r[0] == seat);
-
-                loader.style.display = "none";
-
-                if(student) {
-                    resDiv.style.display = "block";
-                    // بيانات الطالب الأساسية
-                    document.getElementById('info').innerHTML = `
-                        <strong>الاسم:</strong> ${student[1]}<br>
-                        <strong>رقم الجلوس:</strong> ${student[0]}<br>
-                        <strong>المدرسة:</strong> ${student[3]}
-                    `;
-                    
-                    let html = "";
-                    // عرض المواد بدءاً من العمود الخامس (Index 4)
-                    for(let i = 4; i < headers.length; i++) {
-                        if(headers[i]) {
-                            let isTotal = headers[i].includes("مجموع");
-                            html += `<tr class="${isTotal ? 'total-row' : ''}"><td><b>${headers[i]}</b></td><td>${student[i] || '0'}</td></tr>`;
-                        }
+                let html = "";
+                // عرض المواد والدرجات (تبدأ من العمود رقم 5 أي Index 4)
+                for(let i = 4; i < headers.length; i++) {
+                    if(headers[i] && headers[i] !== "") {
+                        let isTotal = headers[i].includes("مجموع");
+                        html += `<tr class="${isTotal ? 'total-row' : ''}">
+                                    <td><b>${headers[i]}</b></td>
+                                    <td>${student[i] || '0'}</td>
+                                 </tr>`;
                     }
-                    document.getElementById('tableData').innerHTML = html;
-                } else {
-                    alert("⚠️ عذراً، لم نجد رقم الجلوس (" + seat + "). تأكد من كتابته بشكل صحيح.");
                 }
-            } catch(e) {
-                loader.style.display = "none";
-                alert("❌ حدث خطأ في الاتصال. تأكد من أن الملف منشور (CSV) والصلاحية (مشاهد).");
+                document.getElementById('tableBody').innerHTML = html;
+            } else {
+                alert("⚠️ عذراً، رقم الجلوس " + seat + " غير موجود في الكشوف.");
             }
+        } catch(e) {
+            loader.style.display = "none";
+            alert("❌ خطأ في الاتصال بالبيانات. تأكد من أن الإنترنت مستقر.");
+            console.error(e);
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
