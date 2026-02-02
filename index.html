@@ -25,7 +25,6 @@
         th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
         th { background: var(--primary); color: white; }
         .total-row { background: #fff9e6; font-weight: bold; color: #c0392b; }
-        .fail-grade { color: #e74c3c; font-weight: bold; }
         #loader { display: none; margin: 15px 0; color: var(--primary); font-weight: bold; }
     </style>
 </head>
@@ -49,7 +48,7 @@
 
     <input type="number" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
     <button id="searchBtn" onclick="getResults()">عرض النتيجة الآن</button>
-    <div id="loader">⏳ جاري البحث في السجلات...</div>
+    <div id="loader">⏳ جاري التحقق من رقم الجلوس...</div>
     
     <div id="res">
         <div id="info" class="info-box"></div>
@@ -97,7 +96,7 @@
         const resDiv = document.getElementById('res');
         const loader = document.getElementById('loader');
         
-        if(!seat) return alert("⚠️ من فضلك أدخل رقم الجلوس");
+        if(!seat || seat == "0") return alert("⚠️ من فضلك أدخل رقم جلوس صحيح");
 
         loader.style.display = "block";
         resDiv.style.display = "none";
@@ -108,13 +107,14 @@
             const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim().replace(/^["']|["']$/g, '')));
             const headers = rows[0];
             
-            let student;
+            let student = null;
+            // التعديل الجوهري: البحث في العمود المخصص فقط
             if(currentMode === 'prep3') {
-                // الصف الثالث: البحث في العمود A (Index 0)
-                student = rows.find((r, index) => index > 0 && r[0] == seat);
+                // الشهادة الإعدادية: ابحث في العمود A (Index 0) حصراً
+                student = rows.find((r, index) => index > 0 && r[0] === seat);
             } else {
-                // الصف الأول والثاني: البحث في العمود C (Index 2)
-                student = rows.find((r, index) => index > 0 && r[2] == seat);
+                // الأول والثاني: ابحث في العمود C (Index 2) حصراً
+                student = rows.find((r, index) => index > 0 && r[2] === seat);
             }
 
             loader.style.display = "none";
@@ -122,7 +122,6 @@
             if(student) {
                 resDiv.style.display = "block";
                 let html = "";
-                // عرض المواد (تبدأ من العمود الخامس Index 4)
                 for(let i = 4; i < headers.length; i++) {
                     if(headers[i]) {
                         let isTotal = headers[i].includes("مجموع");
@@ -131,8 +130,13 @@
                 }
                 document.getElementById('info').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>رقم الجلوس:</strong> ${seat}`;
                 document.getElementById('tableBody').innerHTML = html;
-            } else { alert("⚠️ لم يتم العثور على رقم الجلوس في هذا القسم."); }
-        } catch(e) { loader.style.display = "none"; alert("❌ خطأ في الاتصال بالبيانات."); }
+            } else { 
+                alert("⚠️ رقم الجلوس (" + seat + ") غير موجود في هذا القسم."); 
+            }
+        } catch(e) { 
+            loader.style.display = "none"; 
+            alert("❌ خطأ في الاتصال بالبيانات."); 
+        }
     }
 </script>
 </body>
