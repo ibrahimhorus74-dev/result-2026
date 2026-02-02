@@ -60,8 +60,8 @@
 </div>
 
 <script>
-    // روابط مشفرة (Base64) عشان محدش يقدر يفتحها مباشرة من الكود
-    const _0x4d2a = {
+    // روابط مشفرة Base64 تم تصحيحها بالكامل
+    const _0xData = {
         prep3: 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHOWJ5YjV3ek85bmlNQWpiWkwyeWxUMmNCaE9zTV9GSmZRUWdEaE0wcWlpNEUwZlhzd2ZaczVnOVFXa0dPN2hkS1hCdDJQQnZaL3B1Yj9vdXRwdXQ9Y3N2',
         prep2: 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlFoN2VGN19GVU9wZ3hWMjFZRE5RSGZ5SUN0YXFIU2doNWFtRmtrWFRwQm1KZGFvby1wMzFCdXdtT3pPSFRmSmpIUUZaVnBKazhwZS9wdWI/b3V0cHV0PWNzdg==',
         prep1: 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlE1RDczcU1aSS1feDZ4WEtobFZEX0pFZ2NkcHBfX0dDeS16a1hvb2FsWDdZYmlKVENFenNMZ3Q4OWdXV0dPN2hkS1hCdDJQQnZaL3B1Yj9vdXRwdXQ9Y3N2'
@@ -107,10 +107,11 @@
         resDiv.style.display = "none";
 
         try {
-            // فك التشفير لحظة الطلب فقط
-            const _url = atob(_0x4d2a[currentMode]);
-            const response = await fetch(_url);
+            const _dec = atob(_0xData[currentMode]);
+            const response = await fetch(_dec);
             const text = await response.text();
+            
+            // تحويل النص لمصفوفة مع معالجة المسافات
             const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim().replace(/^["']|["']$/g, '')));
             const headers = rows[0];
             
@@ -126,8 +127,9 @@
             if(student) {
                 resDiv.style.display = "block";
                 let html = "";
+                // المواد تبدأ من العمود الخامس (Index 4) في جميع الشيتات
                 for(let i = 4; i < headers.length; i++) {
-                    if(headers[i]) {
+                    if(headers[i] && headers[i] !== "") {
                         let isTotal = headers[i].includes("مجموع");
                         html += `<tr class="${isTotal ? 'total-row' : ''}"><td><b>${headers[i]}</b></td><td>${student[i] || '0'}</td></tr>`;
                     }
