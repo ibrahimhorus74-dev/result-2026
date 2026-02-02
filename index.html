@@ -8,19 +8,16 @@
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; direction: rtl; margin: 0; padding: 0; }
         .header { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 40px 10px; text-align: center; border-bottom: 5px solid #d4af37; }
         .header h1 { margin: 0; font-size: 24px; }
-        .header p { margin: 5px 0 0; opacity: 0.9; }
-        .gift { color: #d4af37; font-weight: bold; margin-top: 15px; font-size: 19px; border: 1px dashed #d4af37; display: inline-block; padding: 8px 25px; border-radius: 50px; background: rgba(0,0,0,0.2); }
-        .card { max-width: 550px; margin: -30px auto 40px; background: white; padding: 35px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); text-align: center; position: relative; z-index: 10; }
-        .instruction { color: #666; margin-bottom: 10px; font-size: 18px; font-weight: bold; }
-        input { width: 100%; padding: 18px; margin: 15px 0 20px; border: 2px solid #eee; border-radius: 12px; font-size: 22px; text-align: center; box-sizing: border-box; transition: 0.3s; }
-        input:focus { border-color: #d4af37; outline: none; background: #fffdf5; }
-        button { background: #27ae60; color: white; border: none; padding: 18px; border-radius: 12px; cursor: pointer; font-size: 20px; font-weight: bold; width: 100%; box-shadow: 0 4px 15px rgba(39,174,96,0.3); transition: 0.3s; }
-        button:hover { background: #219150; transform: translateY(-2px); }
-        #loader { display: none; margin: 20px 0; color: #1e3c72; font-weight: bold; font-size: 18px; }
+        .gift { color: #d4af37; font-weight: bold; margin-top: 15px; font-size: 18px; border: 1px dashed #d4af37; display: inline-block; padding: 8px 25px; border-radius: 50px; background: rgba(0,0,0,0.2); }
+        .card { max-width: 550px; margin: -30px auto 40px; background: white; padding: 35px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); text-align: center; position: relative; }
+        input { width: 100%; padding: 18px; margin: 15px 0 20px; border: 2px solid #eee; border-radius: 12px; font-size: 22px; text-align: center; box-sizing: border-box; }
+        button { background: #27ae60; color: white; border: none; padding: 18px; border-radius: 12px; cursor: pointer; font-size: 20px; font-weight: bold; width: 100%; transition: 0.3s; }
+        button:hover { background: #219150; }
+        #loader { display: none; margin: 20px 0; color: #1e3c72; font-weight: bold; }
         #res { margin-top: 30px; display: none; text-align: right; }
-        .student-info { background: #f8f9fa; padding: 20px; border-radius: 15px; border-right: 8px solid #d4af37; margin-bottom: 25px; font-size: 19px; line-height: 1.8; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        th, td { border: 1px solid #f0f0f0; padding: 14px; text-align: center; }
+        .student-info { background: #f8f9fa; padding: 20px; border-radius: 15px; border-right: 8px solid #d4af37; margin-bottom: 25px; font-size: 18px; line-height: 1.6; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; }
+        th, td { border: 1px solid #f0f0f0; padding: 12px; text-align: center; }
         th { background: #1e3c72; color: white; }
         .total-row { background: #fff9e6; font-weight: bold; color: #c0392b; }
     </style>
@@ -29,17 +26,13 @@
 
     <div class="header">
         <h1>بوابة نتائج الشهادة الإعدادية 2026</h1>
-        <p>إدارة الحسينية التعليمية</p>
         <div class="gift">إهداء من مدرسة الظواهرية للتعليم الأساسي 🏆</div>
     </div>
 
     <div class="card">
-        <p class="instruction">استعلم الآن عن نتيجتك برقم الجلوس</p>
-        <input type="number" id="seatInput" placeholder="اكتب رقم الجلوس هنا">
+        <input type="text" id="seatInput" placeholder="اكتب رقم الجلوس هنا">
         <button onclick="getResults()">عرض النتيجة الآن</button>
-        
-        <div id="loader">🔍 جاري فحص سجلات الإدارة...</div>
-
+        <div id="loader">🔍 جاري استخراج الدرجات...</div>
         <div id="res">
             <div id="info" class="student-info"></div>
             <table>
@@ -50,7 +43,6 @@
     </div>
 
     <script>
-        // الرابط المشفر لملف الإدارة (9000 طالب)
         const csvLink = 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHUWJ5YjV3ek85bmlNQWpiWkwyeWxUMmMzQmhPc01fRkpZUVFnRGhNMHFxaTRFMGZYc3dmWnM1ZzlRV2tHTzdoZEtYQnQyUEJ2Wi9wdWI/Z2lkPTAmc2luZ2xlPXRydWUmb3V0cHV0PWNzdi';
 
         async function getResults() {
@@ -59,35 +51,32 @@
             const resDiv = document.getElementById('res');
 
             if(!seat) return alert("يرجى إدخال رقم الجلوس");
-
             loader.style.display = "block";
             resDiv.style.display = "none";
 
             try {
                 const response = await fetch(atob(csvLink));
                 const text = await response.text();
-                
-                // تنظيف الملف من الرموز المخفية
-                const cleanText = text.replace(/^\uFEFF/, "");
-                const rows = cleanText.split('\n').filter(line => line.trim() !== "").map(r => r.split(',').map(cell => cell.trim().replace(/[\u200B-\u200D\uFEFF]/g, "")));
+                const cleanText = text.replace(/^\uFEFF/, "").trim();
+                const rows = cleanText.split('\n').map(r => r.split(',').map(cell => cell.trim().replace(/['"]+/g, '')));
                 const headers = rows[0];
                 
-                // البحث الذكي في كل الأعمدة لضمان إيجاد الرقم
-                const student = rows.find(r => r.some(cell => cell == seat));
+                // البحث عن رقم الجلوس (العمود الأول Index 0)
+                const student = rows.find(r => r[0] == seat);
 
                 loader.style.display = "none";
 
                 if(student) {
                     resDiv.style.display = "block";
-                    // عرض بيانات الطالب
+                    // عرض البيانات الأساسية
                     document.getElementById('info').innerHTML = `
-                        <strong>الاسم:</strong> ${student[1] || 'غير مسجل'}<br>
-                        <strong>رقم الجلوس:</strong> ${seat}<br>
-                        <strong>المدرسة:</strong> ${student[3] || 'إدارة الحسينية'}
+                        <strong>الاسم:</strong> ${student[1]}<br>
+                        <strong>الإدارة:</strong> ${student[2]}<br>
+                        <strong>المدرسة:</strong> ${student[3]}
                     `;
                     
                     let html = "";
-                    // عرض المواد (تبدأ من العمود الخامس Index 4 بناءً على ترتيبك)
+                    // الدرجات تبدأ من "عربى" اللي هو العمود الخامس (Index 4)
                     for(let i = 4; i < headers.length; i++) {
                         if(headers[i]) {
                             let isTotal = headers[i].includes("مجموع");
@@ -96,11 +85,11 @@
                     }
                     document.getElementById('tableData').innerHTML = html;
                 } else {
-                    alert("⚠️ عذراً، رقم الجلوس (" + seat + ") غير موجود في كشوف الشهادة الإعدادية.");
+                    alert("⚠️ رقم الجلوس " + seat + " غير موجود.");
                 }
             } catch(e) {
                 loader.style.display = "none";
-                alert("❌ فشل الاتصال بقاعدة البيانات. تأكد من نشر الشيت بصيغة CSV.");
+                alert("❌ فشل الاتصال. تأكد من عمل Publish to web بصيغة CSV.");
             }
         }
     </script>
