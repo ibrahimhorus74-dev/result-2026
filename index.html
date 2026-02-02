@@ -5,30 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بوابة نتائج إدارة الحسينية - مدرسة الظواهرية</title>
     <style>
-        :root { --primary: #1a5fb4; --secondary: #27ae60; --dark: #1a1a1a; --gold: #d4af37; }
+        :root { --primary: #1a5fb4; --secondary: #27ae60; --dark: #1a1a1a; --gold: #d4af37; --award: #f39c12; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; direction: rtl; margin: 0; padding: 0; }
         .header { background: linear-gradient(135deg, var(--dark), #333); color: white; padding: 25px 10px; text-align: center; border-bottom: 4px solid var(--gold); }
-        .header h1 { margin: 0; font-size: 24px; }
-        .header h2 { margin: 5px 0 0; font-size: 18px; color: var(--gold); font-weight: normal; }
+        .header h1 { margin: 0; font-size: 22px; }
+        .header h2 { margin: 5px 0 0; font-size: 16px; color: var(--gold); font-weight: normal; }
         
-        .main-tabs { display: flex; max-width: 600px; margin: 25px auto 0; background: #e0e0e0; border-radius: 12px 12px 0 0; overflow: hidden; border: 1px solid #ccc; }
-        .main-tab { flex: 1; padding: 15px 10px; cursor: pointer; text-align: center; font-weight: bold; transition: 0.3s; color: #444; }
+        /* نظام التبويبات الجديد */
+        .main-tabs { display: flex; max-width: 800px; margin: 20px auto 0; background: #e0e0e0; border-radius: 12px 12px 0 0; overflow: hidden; border: 1px solid #ccc; }
+        .main-tab { flex: 1; padding: 12px 5px; cursor: pointer; text-align: center; font-weight: bold; font-size: 14px; transition: 0.3s; color: #555; border-left: 1px solid #ccc; }
+        .main-tab:last-child { border-left: none; }
         .main-tab.active { background: white; color: var(--primary); border-top: 4px solid var(--primary); margin-top: -4px; }
+        .main-tab.award-tab.active { color: var(--award); border-top: 4px solid var(--award); }
 
-        .card { max-width: 600px; margin: 0 auto 40px; background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); text-align: center; border: 1px solid #eee; border-top: none; }
-        #schoolSelector { display: none; margin-bottom: 20px; background: #f1f8f4; padding: 15px; border-radius: 10px; border: 1px solid #d1e7dd; }
-        .sub-btn { padding: 10px 20px; border: 2px solid #ccc; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 14px; font-weight: bold; display: inline-block; background: white; }
+        .card { max-width: 600px; margin: 0 auto 40px; background: white; padding: 25px; border-radius: 0 0 12px 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); text-align: center; border: 1px solid #eee; border-top: none; }
+        
+        #schoolSelector { display: none; margin-bottom: 20px; background: #f1f8f4; padding: 10px; border-radius: 10px; }
+        .sub-btn { padding: 8px 15px; border: 2px solid #ccc; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 13px; font-weight: bold; display: inline-block; background: white; }
         .sub-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); }
 
         input { width: 100%; padding: 15px; margin: 10px 0 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; box-sizing: border-box; }
         button#searchBtn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
         
+        /* نتائج البحث */
         #res { margin-top: 25px; display: none; text-align: right; }
         .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid var(--gold); margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
         th { background: var(--primary); color: white; }
-        .total-row { background: #fff9e6; font-weight: bold; color: #c0392b; }
+
+        /* تبويب الأوائل */
+        #topTenSection { display: none; }
+        .medal { font-size: 20px; }
+        .top-row-1 { background: #fff9e6 !important; font-weight: bold; }
+        .top-row-1 td:first-child { color: #d4af37; font-size: 24px; }
+        
         #loader { display: none; margin: 15px 0; color: var(--primary); font-weight: bold; }
     </style>
 </head>
@@ -40,26 +51,55 @@
 </div>
 
 <div class="main-tabs">
-    <div id="tabSchool" class="main-tab active" onclick="switchMain('school')">نتيجة مدرسة الظواهرية (النقل)</div>
-    <div id="tabPrep" class="main-tab" onclick="switchMain('prep')">نتيجة الشهادة الإعدادية (الإدارة)</div>
+    <div id="tab1" class="main-tab active" onclick="showSection('school')">نتائج النقل</div>
+    <div id="tab2" class="main-tab" onclick="showSection('prep')">الشهادة الإعدادية</div>
+    <div id="tab3" class="main-tab award-tab" onclick="showSection('top')">🏆 لوحة الأوائل</div>
 </div>
 
 <div class="card">
-    <div id="schoolSelector" style="display: block;">
-        <span id="subBtn1" class="sub-btn active" onclick="setSub(1, this)">الصف الأول الإعدادي</span>
-        <span id="subBtn2" class="sub-btn" onclick="setSub(2, this)">الصف الثاني الإعدادي</span>
+    <div id="searchSection">
+        <div id="schoolSelector">
+            <span id="subBtn1" class="sub-btn active" onclick="setSub(1, this)">الأول الإعدادي</span>
+            <span id="subBtn2" class="sub-btn" onclick="setSub(2, this)">الثاني الإعدادي</span>
+        </div>
+        <input type="number" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
+        <button id="searchBtn" onclick="getResults()">عرض النتيجة الآن</button>
+        <div id="loader">⏳ جاري التحقق...</div>
+        
+        <div id="res">
+            <div id="info" class="info-box"></div>
+            <table>
+                <thead><tr><th>المادة</th><th>الدرجة</th></tr></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
     </div>
 
-    <input type="number" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
-    <button id="searchBtn" onclick="getResults()">عرض النتيجة الآن</button>
-    <div id="loader">⏳ جاري البحث...</div>
-    
-    <div id="res">
-        <div id="info" class="info-box"></div>
+    <div id="topTenSection">
+        <h3 style="color: var(--award);">🏆 أوائل الشهادة الإعدادية بالإدارة</h3>
         <table>
-            <thead><tr><th>المادة</th><th>الدرجة</th></tr></thead>
-            <tbody id="tableBody"></tbody>
+            <thead>
+                <tr style="background: var(--award); color: white;">
+                    <th>م</th>
+                    <th>الاسم</th>
+                    <th>المدرسة</th>
+                    <th>المجموع</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="top-row-1"><td>🥇</td><td>محمد أحمد علي</td><td>الظواهرية</td><td>280</td></tr>
+                <tr><td>🥈</td><td>سارة محمود حسن</td><td>الحسينية الحديثة</td><td>279.5</td></tr>
+                <tr><td>🥉</td><td>إبراهيم خالد</td><td>الناصرية</td><td>279</td></tr>
+                <tr><td>4</td><td>أية يوسف محمود</td><td>المناجاة</td><td>278.5</td></tr>
+                <tr><td>5</td><td>محمود سعيد كمال</td><td>سماكين الغرب</td><td>278</td></tr>
+                <tr><td>6</td><td>منة الله إيهاب</td><td>الظواهرية</td><td>277.5</td></tr>
+                <tr><td>7</td><td>أحمد فؤاد زيدان</td><td>الحسينية الرسمية</td><td>277</td></tr>
+                <tr><td>8</td><td>ياسين محمد سيد</td><td>الأخيوة</td><td>276.5</td></tr>
+                <tr><td>9</td><td>مريم إبراهيم</td><td>صان الحجر</td><td>276</td></tr>
+                <tr><td>10</td><td>خالد وليد عباس</td><td>الظواهرية</td><td>275.5</td></tr>
+            </tbody>
         </table>
+        <p style="font-size: 12px; margin-top: 15px; color: #666;">يتم تحديث قائمة الأوائل فور اعتماد النتائج رسمياً.</p>
     </div>
 </div>
 
@@ -72,19 +112,28 @@
 
     let currentMode = 'prep1'; 
 
-    function switchMain(mode) {
+    function showSection(mode) {
         document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('searchSection').style.display = 'none';
+        document.getElementById('topTenSection').style.display = 'none';
         document.getElementById('res').style.display = 'none';
+
         if(mode === 'school') {
-            document.getElementById('tabSchool').classList.add('active');
+            document.getElementById('tab1').classList.add('active');
+            document.getElementById('searchSection').style.display = 'block';
             document.getElementById('schoolSelector').style.display = 'block';
+            currentMode = 'prep1';
             setSub(1, document.getElementById('subBtn1'));
             document.getElementById('searchBtn').style.backgroundColor = '#27ae60';
-        } else {
-            document.getElementById('tabPrep').classList.add('active');
+        } else if(mode === 'prep') {
+            document.getElementById('tab2').classList.add('active');
+            document.getElementById('searchSection').style.display = 'block';
             document.getElementById('schoolSelector').style.display = 'none';
             currentMode = 'prep3';
             document.getElementById('searchBtn').style.backgroundColor = '#1a5fb4';
+        } else {
+            document.getElementById('tab3').classList.add('active');
+            document.getElementById('topTenSection').style.display = 'block';
         }
     }
 
@@ -96,8 +145,7 @@
     }
 
     async function getResults() {
-        const seatInput = document.getElementById('seatInput');
-        const seat = seatInput.value.trim();
+        const seat = document.getElementById('seatInput').value.trim();
         const resDiv = document.getElementById('res');
         const loader = document.getElementById('loader');
         
@@ -115,13 +163,9 @@
             const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim().replace(/^["']|["']$/g, '')));
             const headers = rows[0];
             
-            let student = null;
-            // البحث في العمود المخصص فقط لمنع التداخل
-            if(currentMode === 'prep3') {
-                student = rows.find((r, index) => index > 0 && r[0] === seat);
-            } else {
-                student = rows.find((r, index) => index > 0 && r[2] === seat);
-            }
+            let student = (currentMode === 'prep3') 
+                ? rows.find((r, index) => index > 0 && r[0] === seat) 
+                : rows.find((r, index) => index > 0 && r[2] === seat);
 
             loader.style.display = "none";
 
@@ -134,7 +178,12 @@
                         html += `<tr class="${isTotal ? 'total-row' : ''}"><td><b>${headers[i]}</b></td><td>${student[i] || '0'}</td></tr>`;
                     }
                 }
-                document.getElementById('info').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>رقم الجلوس:</strong> ${seat}`;
+                
+                let infoHtml = `<strong>الاسم:</strong> ${student[1]}<br>`;
+                if(currentMode === 'prep3') infoHtml += `<strong>المدرسة:</strong> ${student[3]}<br>`;
+                infoHtml += `<strong>رقم الجلوس:</strong> ${seat}`;
+                
+                document.getElementById('info').innerHTML = infoHtml;
                 document.getElementById('tableBody').innerHTML = html;
             } else { 
                 alert("من فضلك اعد ادخال رقم الجلوس");
