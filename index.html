@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة نتائج الشهادة الإعدادية - إدارة الحسينية</title>
+    <title>بوابة نتائج الشهادة الإعدادية - الحسينية</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; direction: rtl; margin: 0; padding: 0; }
         .header { background: linear-gradient(135deg, #2c3e50, #000000); color: white; padding: 40px 10px; text-align: center; border-bottom: 5px solid #d4af37; }
-        .header h1 { margin: 0; font-size: 24px; }
-        .header .gift { color: #d4af37; font-weight: bold; margin-top: 15px; font-size: 19px; border: 1px dashed #d4af37; display: inline-block; padding: 5px 20px; border-radius: 50px; }
+        .header h1 { margin: 0; font-size: 22px; }
+        .header .gift { color: #d4af37; font-weight: bold; margin-top: 15px; font-size: 18px; border: 1px dashed #d4af37; display: inline-block; padding: 5px 20px; border-radius: 50px; }
         .card { max-width: 550px; margin: -25px auto 40px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); text-align: center; position: relative; z-index: 10; }
         .tab-btn { background: #f0f0f0; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; margin: 5px; color: #555; }
         .tab-btn.active { background: #1a5fb4; color: white; }
         input { width: 100%; padding: 15px; margin: 25px 0; border: 2px solid #eee; border-radius: 12px; font-size: 20px; text-align: center; box-sizing: border-box; }
-        button.search-btn { background: #27ae60; color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-size: 19px; font-weight: bold; width: 100%; }
+        button.search-btn { background: #27ae60; color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-size: 19px; font-weight: bold; width: 100%; transition: 0.3s; }
+        button.search-btn:hover { background: #219150; }
         #res { margin-top: 30px; display: none; text-align: right; }
-        .student-info { background: #f8f9fa; padding: 20px; border-radius: 15px; border-right: 8px solid #d4af37; margin-bottom: 25px; font-size: 19px; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; }
-        th, td { border: 1px solid #f0f0f0; padding: 14px; text-align: center; }
+        .student-info { background: #f8f9fa; padding: 20px; border-radius: 15px; border-right: 8px solid #d4af37; margin-bottom: 25px; font-size: 18px; line-height: 1.8; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        th, td { border: 1px solid #f0f0f0; padding: 12px; text-align: center; }
         th { background: #2c3e50; color: white; }
+        .total-row { background: #fff9e6; font-weight: bold; color: #c0392b; }
         .loader { display: none; color: #1a5fb4; font-weight: bold; margin: 20px 0; }
     </style>
 </head>
@@ -38,7 +40,7 @@
         <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
         <button class="search-btn" onclick="getResults()">عرض النتيجة الآن</button>
         
-        <div id="loader" class="loader">🔍 جاري البحث في السجلات...</div>
+        <div id="loader" class="loader">🔍 جاري استخراج بيانات الطالب...</div>
 
         <div id="res">
             <div id="info" class="student-info"></div>
@@ -51,9 +53,7 @@
 
     <script>
         let mode = 1;
-        // روابط الـ CSV المشفرة (تأكد من تحديث linkNakl لو كان له شيت مختلف)
-        const linkNakl = 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHUWJ5YjV3ek85bmlNQWpiWkwyeWxUMmMzQmhPc01fRkpZUVFnRGhNMHFxaTRFMGZYc3dmWnM1ZzlRV2tHTzdoZEtYQnQyUEJ2Wi9wdWI/Z2lkPTAmc2luZ2xlPXRydWUmb3V0cHV0PWNzdi';
-        const linkShahada = 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHUWJ5YjV3ek85bmlNQWpiWkwyeWxUMmMzQmhPc01fRkpZUVFnRGhNMHFxaTRFMGZYc3dmWnM1ZzlRV2tHTzdoZEtYQnQyUEJ2Wi9wdWI/Z2lkPTAmc2luZ2xlPXRydWUmb3V0cHV0PWNzdi';
+        const sLink = 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHUWJ5YjV3ek85bmlNQWpiWkwyeWxUMmMzQmhPc01fRkpZUVFnRGhNMHFxaTRFMGZYc3dmWnM1ZzlRV2tHTzdoZEtYQnQyUEJ2Wi9wdWI/Z2lkPTAmc2luZ2xlPXRydWUmb3V0cHV0PWNzdi';
 
         function setMode(m) {
             mode = m;
@@ -67,24 +67,4 @@
             const loader = document.getElementById('loader');
             const resDiv = document.getElementById('res');
 
-            if(!seat) return alert("يرجى كتابة رقم الجلوس");
-
-            loader.style.display = "block";
-            resDiv.style.display = "none";
-
-            try {
-                const targetBase64 = mode === 1 ? linkNakl : linkShahada;
-                const response = await fetch(atob(targetBase64));
-                const text = await response.text();
-                
-                // تقسيم السطور وتنظيف المسافات
-                const rows = text.split('\n').map(r => r.split(',').map(cell => cell.trim()));
-                const headers = rows[0];
-                
-                // البحث في العمود الأول (Index 0) لأنك قلت رقم الجلوس في أول عمود
-                const student = rows.find(r => r[0] == seat);
-
-                loader.style.display = "none";
-
-                if(student) {
-                    resDiv.style.display =
+            if(!seat) return
