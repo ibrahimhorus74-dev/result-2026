@@ -14,7 +14,7 @@
         button:hover { background: #219150; transform: translateY(-2px); }
         #loader { display: none; margin: 20px 0; color: #1a5fb4; font-weight: bold; }
         #res { margin-top: 25px; display: none; text-align: right; }
-        .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 8px solid #d4af37; margin-bottom: 20px; font-size: 17px; line-height: 1.6; }
+        .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid #d4af37; margin-bottom: 20px; font-size: 17px; line-height: 1.6; }
         table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; }
         th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
         th { background: #1a5fb4; color: white; }
@@ -31,7 +31,7 @@
 <div class="card">
     <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
     <button onclick="getResults()">عرض النتيجة الآن</button>
-    <div id="loader">🔍 جاري استخراج الدرجات من السجلات...</div>
+    <div id="loader">🔍 جاري فحص السجلات...</div>
     
     <div id="res">
         <div id="info" class="info-box"></div>
@@ -48,7 +48,6 @@
 </div>
 
 <script>
-    // الرابط المباشر لبيانات الـ CSV التي قمت بنشرها
     const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbnUGQbyb5wzO9niMAjbZL2ylT2c3BhOsM_FJfQQgDhM0qqi4E0fXswfZs5g9QWkGO7hdKXBt2PBvZ/pub?output=csv';
 
     async function getResults() {
@@ -65,29 +64,32 @@
             const response = await fetch(dataUrl);
             const text = await response.text();
             
-            // تقسيم النص إلى سطور ثم إلى أعمدة
-            const rows = text.split('\n').map(row => row.split(',').map(cell => cell.trim().replace(/^["']|["']$/g, '')));
-            const headers = rows[0]; // الصف الأول (العناوين)
+            // تعديل جوهري: تقسيم السطور والتعامل مع رموز \r المخفية وتنظيف الخلايا تماماً
+            const rows = text.split(/\r?\n/).map(row => 
+                row.split(',').map(cell => cell.trim().replace(/^["']|["']$/g, ''))
+            );
             
-            // البحث عن رقم الجلوس في العمود الأول (Index 0)
-            const student = rows.find(r => r[0] == seat);
+            const headers = rows[0]; 
+            
+            // بحث ذكي: بيقارن القيمة في أول عمود، ولو منفعش بيبحث في الصف كله
+            const student = rows.find(r => r[0] == seat || r.some(cell => cell == seat));
 
             loader.style.display = "none";
 
             if(student) {
                 resDiv.style.display = "block";
                 
-                // عرض بيانات الطالب (الاسم في العمود 2، الإدارة 3، المدرسة 4)
+                // التأكد من أماكن البيانات (الجلوس غالباً هو أول قيمة نجدها تطابق المدخل)
                 document.getElementById('info').innerHTML = `
                     <strong>الاسم:</strong> ${student[1] || 'غير مسجل'}<br>
-                    <strong>رقم الجلوس:</strong> ${student[0]}<br>
+                    <strong>رقم الجلوس:</strong> ${seat}<br>
                     <strong>المدرسة:</strong> ${student[3] || 'إدارة الحسينية'}
                 `;
                 
                 let html = "";
-                // عرض المواد والدرجات (تبدأ من العمود رقم 5 أي Index 4)
+                // عرض المواد من العمود الخامس (Index 4)
                 for(let i = 4; i < headers.length; i++) {
-                    if(headers[i] && headers[i] !== "") {
+                    if(headers[i] && headers[i].trim() !== "") {
                         let isTotal = headers[i].includes("مجموع");
                         html += `<tr class="${isTotal ? 'total-row' : ''}">
                                     <td><b>${headers[i]}</b></td>
@@ -101,7 +103,7 @@
             }
         } catch(e) {
             loader.style.display = "none";
-            alert("❌ خطأ في الاتصال بالبيانات. تأكد من أن الإنترنت مستقر.");
+            alert("❌ خطأ في الاتصال بالبيانات.");
             console.error(e);
         }
     }
