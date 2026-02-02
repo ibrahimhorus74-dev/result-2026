@@ -113,14 +113,16 @@
             const headers = rows[0];
             
             let student = null;
-            let startCol = 4; // القيمة الافتراضية لبداية المواد
+            let startCol = 4; // افتراضي للشهادة الإعدادية
 
             if(currentMode === 'prep3') {
+                // الشهادة الإعدادية: الجلوس في A (Index 0)
                 student = rows.find((r, index) => index > 0 && r[0] === seat);
-                startCol = 4; // في الإعدادية المواد تبدأ من العمود E (Index 4)
+                startCol = 4; 
             } else {
+                // النقل (أولى وتانية): الجلوس في C (Index 2)
                 student = rows.find((r, index) => index > 0 && r[2] === seat);
-                startCol = 3; // في النقل مادة العربي تبدأ من العمود D (Index 3)
+                startCol = 3; // لظهور مادة العربي (العمود الرابع D)
             }
 
             loader.style.display = "none";
@@ -128,7 +130,6 @@
             if(student) {
                 resDiv.style.display = "block";
                 let html = "";
-                // تعديل الحلقة لتبدأ من مادة العربي بناءً على نوع الصف
                 for(let i = startCol; i < headers.length; i++) {
                     if(headers[i] && headers[i] !== "" && !headers[i].includes("مسلسل")) {
                         let isTotal = headers[i].includes("مجموع") || headers[i].includes("المجموع");
@@ -136,8 +137,10 @@
                     }
                 }
                 
+                // الاسم دائماً في العمود الثاني (B) في كل الشيتات
                 let infoHtml = `<strong>الاسم:</strong> ${student[1]}<br>`;
                 if(currentMode === 'prep3') {
+                    // المدرسة في العمود الرابع (D) للإعدادية فقط
                     infoHtml += `<strong>المدرسة:</strong> ${student[3] || 'غير متوفر'}<br>`;
                 }
                 infoHtml += `<strong>رقم الجلوس:</strong> ${seat}`;
