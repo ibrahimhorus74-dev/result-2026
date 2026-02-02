@@ -24,7 +24,7 @@
         button#searchBtn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
         
         #res { margin-top: 25px; display: none; text-align: right; }
-        .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid var(--gold); margin-bottom: 20px; }
+        .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid var(--gold); margin-bottom: 20px; line-height: 1.8; }
         table { width: 100%; border-collapse: collapse; background: white; }
         th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
         th { background: var(--primary); color: white; }
@@ -116,10 +116,11 @@
             const headers = rows[0];
             
             let student = null;
-            // البحث في العمود المخصص فقط لمنع التداخل
             if(currentMode === 'prep3') {
+                // الشهادة الإعدادية: البحث في العمود A (Index 0)
                 student = rows.find((r, index) => index > 0 && r[0] === seat);
             } else {
+                // صفوف النقل: البحث في العمود C (Index 2)
                 student = rows.find((r, index) => index > 0 && r[2] === seat);
             }
 
@@ -134,7 +135,15 @@
                         html += `<tr class="${isTotal ? 'total-row' : ''}"><td><b>${headers[i]}</b></td><td>${student[i] || '0'}</td></tr>`;
                     }
                 }
-                document.getElementById('info').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>رقم الجلوس:</strong> ${seat}`;
+                
+                let infoHtml = `<strong>الاسم:</strong> ${student[1]}<br>`;
+                // إضافة اسم المدرسة من العمود D (Index 3) للشهادة الإعدادية فقط
+                if(currentMode === 'prep3') {
+                    infoHtml += `<strong>المدرسة:</strong> ${student[3] || 'غير متوفر'}<br>`;
+                }
+                infoHtml += `<strong>رقم الجلوس:</strong> ${seat}`;
+                
+                document.getElementById('info').innerHTML = infoHtml;
                 document.getElementById('tableBody').innerHTML = html;
             } else { 
                 alert("من فضلك اعد ادخال رقم الجلوس");
@@ -147,4 +156,3 @@
 </script>
 </body>
 </html>
-
