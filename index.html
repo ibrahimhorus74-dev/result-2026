@@ -3,38 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نتيجة الشهادة الإعدادية - إدارة الحسينية</title>
+    <title>بوابة نتائج إدارة الحسينية - مدرسة الظواهرية</title>
     <style>
+        :root { --primary: #1a5fb4; --secondary: #27ae60; --dark: #1a1a1a; --gold: #d4af37; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; direction: rtl; margin: 0; padding: 0; }
-        .header { background: linear-gradient(135deg, #1a5fb4, #111); color: white; padding: 30px 10px; text-align: center; border-bottom: 5px solid #d4af37; }
-        .gift { color: #d4af37; font-weight: bold; margin-top: 10px; font-size: 18px; border: 1px dashed #d4af37; display: inline-block; padding: 8px 25px; border-radius: 50px; background: rgba(0,0,0,0.2); }
-        .card { max-width: 500px; margin: -20px auto 40px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        input { width: 100%; padding: 15px; margin: 15px 0 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 20px; text-align: center; box-sizing: border-box; }
-        button { background: #27ae60; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; margin-bottom: 10px; }
+        
+        /* تصميم العناوين العلوية */
+        .header { background: linear-gradient(135deg, var(--dark), #333); color: white; padding: 25px 10px; text-align: center; border-bottom: 4px solid var(--gold); }
+        .header h1 { margin: 0; font-size: 24px; color: white; }
+        .header h2 { margin: 5px 0 0; font-size: 18px; color: var(--gold); font-weight: normal; }
+        
+        /* تصميم التبويبات */
+        .main-tabs { display: flex; max-width: 600px; margin: 25px auto 0; background: #e0e0e0; border-radius: 12px 12px 0 0; overflow: hidden; border: 1px solid #ccc; }
+        .main-tab { flex: 1; padding: 15px 10px; cursor: pointer; text-align: center; font-weight: bold; font-size: 15px; transition: 0.3s; color: #444; }
+        .main-tab.active { background: white; color: var(--primary); border-top: 4px solid var(--primary); margin-top: -4px; }
+
+        .card { max-width: 600px; margin: 0 auto 40px; background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); text-align: center; border: 1px solid #eee; border-top: none; }
+        
+        /* اختيار الصفوف داخل تبويب المدرسة */
+        #schoolSelector { display: none; margin-bottom: 20px; background: #f1f8f4; padding: 15px; border-radius: 10px; border: 1px solid #d1e7dd; }
+        .sub-btn { padding: 10px 20px; border: 2px solid #ccc; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 14px; font-weight: bold; display: inline-block; transition: 0.2s; background: white; }
+        .sub-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); }
+
+        input { width: 100%; padding: 15px; margin: 10px 0 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; box-sizing: border-box; }
+        button#searchBtn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; box-shadow: 0 4px 15px rgba(26, 95, 180, 0.3); }
+        button#searchBtn:hover { transform: translateY(-2px); opacity: 0.9; }
+        
         #res { margin-top: 25px; display: none; text-align: right; }
-        .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid #d4af37; margin-bottom: 20px; font-size: 17px; }
+        .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid var(--gold); margin-bottom: 20px; font-size: 16px; }
         table { width: 100%; border-collapse: collapse; background: white; }
         th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
-        th { background: #1a5fb4; color: white; }
-        .fail-grade { color: #e74c3c; font-weight: bold; background-color: #fff5f5; }
+        th { background: var(--primary); color: white; }
         .total-row { background: #fff9e6; font-weight: bold; color: #c0392b; }
-        .grade-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; color: white; font-size: 14px; margin-top: 5px; }
-        .excelent { background-color: #27ae60; } .very-good { background-color: #2980b9; } 
-        .good { background-color: #f39c12; } .pass { background-color: #95a5a6; } .fail { background-color: #e74c3c; }
-        .print-btn { background: #34495e; font-size: 14px; padding: 10px; }
-        @media print { .header, .card input, button, .gift { display: none; } .card { box-shadow: none; margin: 0; max-width: 100%; } }
+        .fail-grade { color: #e74c3c; font-weight: bold; }
+        #loader { display: none; margin: 15px 0; color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>بوابة نتائج الشهادة الإعدادية 2026</h1>
-    <div class="gift">إهداء من مدرسة الظواهرية للتعليم الأساسي 🏆</div>
+    <h1>إدارة الحسينية التعليمية</h1>
+    <h2>مدرسة الظواهرية للتعليم الأساسي</h2>
+</div>
+
+<div class="main-tabs">
+    <div id="tabSchool" class="main-tab active" onclick="switchMain('school')">نتيجة مدرسة الظواهرية (النقل)</div>
+    <div id="tabPrep" class="main-tab" onclick="switchMain('prep')">نتيجة الشهادة الإعدادية (الإدارة)</div>
 </div>
 
 <div class="card">
-    <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
-    <button onclick="getResults()">عرض النتيجة الآن</button>
+    <div id="schoolSelector" style="display: block;">
+        <div style="margin-bottom: 10px; font-weight: bold; color: var(--secondary);">اختر الصف الدراسي:</div>
+        <span id="subBtn1" class="sub-btn active" onclick="setSub(1, this)">الصف الأول الإعدادي</span>
+        <span id="subBtn2" class="sub-btn" onclick="setSub(2, this)">الصف الثاني الإعدادي</span>
+    </div>
+
+    <input type="number" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
+    <button id="searchBtn" onclick="getResults()">عرض النتيجة الآن</button>
+    <div id="loader">⏳ جاري تحميل النتيجة...</div>
     
     <div id="res">
         <div id="info" class="info-box"></div>
@@ -42,16 +68,44 @@
             <thead><tr><th>المادة</th><th>الدرجة</th></tr></thead>
             <tbody id="tableBody"></tbody>
         </table>
-        <br>
-        <button class="print-btn" onclick="window.print()">طباعة الشهادة 🖨️</button>
     </div>
 </div>
 
 <script>
-    const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbnUGQbyb5wzO9niMAjbZL2ylT2c3BhOsM_FJfQQgDhM0qqi4E0fXswfZs5g9QWkGO7hdKXBt2PBvZ/pub?output=csv';
-    const appTitle = "رابط الشهادة الاعدادية لادارة الحسينية 2026";
+    const links = {
+        prep3: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbnUGQbyb5wzO9niMAjbZL2ylT2c3BhOsM_FJfQQgDhM0qqi4E0fXswfZs5g9QWkGO7hdKXBt2PBvZ/pub?output=csv',
+        prep2: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQh7eF7_FUOpgxYV21YDNQHIfyICTaqHSgh5amFkkXTpBmJdaoo-p31BuwmOzOHT7fJj8QFZVpJk8pe/pub?output=csv',
+        prep1: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5D73qMZI-_z6xXKHlVD_JEgcdrp__GCy-zkXooalXq7YbiJTVCEjsLgt89q0L_A/pub?output=csv'
+    };
 
-    function checkFail(subject, score) {
+    let currentMode = 'prep1'; 
+
+    function switchMain(mode) {
+        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('res').style.display = 'none';
+        
+        if(mode === 'school') {
+            document.getElementById('tabSchool').classList.add('active');
+            document.getElementById('schoolSelector').style.display = 'block';
+            currentMode = 'prep1'; // افتراضي أولى إعدادي
+            setSub(1, document.getElementById('subBtn1'));
+            document.getElementById('searchBtn').style.backgroundColor = '#27ae60';
+        } else {
+            document.getElementById('tabPrep').classList.add('active');
+            document.getElementById('schoolSelector').style.display = 'none';
+            currentMode = 'prep3';
+            document.getElementById('searchBtn').style.backgroundColor = '#1a5fb4';
+        }
+    }
+
+    function setSub(grade, el) {
+        currentMode = 'prep' + grade;
+        document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('res').style.display = 'none';
+    }
+
+    function isLowScore(subject, score) {
         let val = parseFloat(score);
         if (isNaN(val)) return false;
         if (subject.includes("عربى") && val < 20) return true;
@@ -62,59 +116,56 @@
         return false;
     }
 
-    function calculateGrade(score) {
-        let total = parseFloat(score);
-        if (isNaN(total)) return { text: "", class: "" };
-        let percentage = (total / 140) * 100;
-        if (percentage >= 85) return { text: "امتياز 🌟", class: "excelent" };
-        if (percentage >= 75) return { text: "جيد جداً ✨", class: "very-good" };
-        if (percentage >= 65) return { text: "جيد 👍", class: "good" };
-        if (percentage >= 50) return { text: "مقبول 😅", class: "pass" };
-        return { text: "دون المستوى ⚠️", class: "fail" };
-    }
-
     async function getResults() {
         const seat = document.getElementById('seatInput').value.trim();
         const resDiv = document.getElementById('res');
-        
-        if(!seat) return alert(`${appTitle}\n\n⚠️ من فضلك ادخل رقم الجلوس أولاً`);
+        const loader = document.getElementById('loader');
+        const url = links[currentMode];
+
+        if(!seat) return alert("⚠️ فضلاً، أدخل رقم الجلوس");
+
+        loader.style.display = "block";
+        resDiv.style.display = "none";
 
         try {
-            const response = await fetch(dataUrl);
+            const response = await fetch(url);
             const text = await response.text();
             const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim().replace(/^["']|["']$/g, '')));
             const headers = rows[0];
             const student = rows.find(r => r[0] == seat || r.some(cell => cell == seat));
 
+            loader.style.display = "none";
+
             if(student) {
                 resDiv.style.display = "block";
                 let html = "";
                 for(let i = 4; i < headers.length; i++) {
-                    if(headers[i]) {
+                    if(headers[i] && headers[i] !== "") {
                         let val = student[i] || '0';
-                        let isRed = checkFail(headers[i], val);
+                        let isRed = isLowScore(headers[i], val);
                         let isTotal = headers[i].includes("مجموع");
-                        let tdClass = isRed ? 'class="fail-grade"' : '';
-                        
-                        if(isTotal) {
-                            let g = calculateGrade(val);
-                            html += `<tr class="total-row"><td>${headers[i]}</td><td>${val}<br><span class="grade-badge ${g.class}">${g.text}</span></td></tr>`;
-                        } else {
-                            html += `<tr><td>${headers[i]}</td><td ${tdClass}>${val}</td></tr>`;
-                        }
+                        html += `<tr class="${isTotal ? 'total-row' : ''}">
+                                    <td><b>${headers[i]}</b></td>
+                                    <td class="${isRed ? 'fail-grade' : ''}">${val}</td>
+                                 </tr>`;
                     }
                 }
-                document.getElementById('info').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>المدرسة:</strong> ${student[3]}<br><strong>رقم الجلوس:</strong> ${seat}`;
+                
+                let gradeTitle = currentMode === 'prep3' ? 'الشهادة الإعدادية' : (currentMode === 'prep2' ? 'الثاني الإعدادي' : 'الأول الإعدادي');
+                document.getElementById('info').innerHTML = `
+                    <strong>الاسم:</strong> ${student[1]}<br>
+                    <strong>المرحلة:</strong> ${gradeTitle}<br>
+                    <strong>رقم الجلوس:</strong> ${seat}
+                `;
                 document.getElementById('tableBody').innerHTML = html;
             } else { 
-                alert(`${appTitle}\n\n⚠️ عذراً، لم نجد رقم الجلوس (${seat}) في سجلات الإدارة.`); 
+                alert("⚠️ لم يتم العثور على رقم الجلوس في هذا التبويب."); 
             }
         } catch(e) { 
-            alert(`${appTitle}\n\n❌ فشل الاتصال بقاعدة البيانات.`); 
+            loader.style.display = "none";
+            alert("❌ خطأ في الاتصال بالبيانات."); 
         }
     }
 </script>
 </body>
 </html>
-
-
