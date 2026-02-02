@@ -14,9 +14,9 @@
         button:hover { background: #219150; transform: translateY(-2px); }
         #loader { display: none; margin: 20px 0; color: #1a5fb4; font-weight: bold; }
         #res { margin-top: 30px; display: none; text-align: right; }
-        .student-info { background: #f8f9fa; padding: 20px; border-radius: 15px; border-right: 8px solid #d4af37; margin-bottom: 25px; font-size: 18px; line-height: 1.6; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; }
-        th, td { border: 1px solid #f0f0f0; padding: 12px; text-align: center; }
+        .student-info { background: #f8f9fa; padding: 20px; border-radius: 15px; border-right: 8px solid #d4af37; margin-bottom: 25px; font-size: 19px; line-height: 1.8; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        th, td { border: 1px solid #f0f0f0; padding: 14px; text-align: center; }
         th { background: #1a5fb4; color: white; }
         .total-row { background: #fff9e6; font-weight: bold; color: #c0392b; }
     </style>
@@ -29,9 +29,9 @@
     </div>
 
     <div class="card">
-        <input type="number" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
+        <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
         <button onclick="getResults()">عرض النتيجة الآن</button>
-        <div id="loader">🔍 جاري جلب النتيجة من قاعدة البيانات...</div>
+        <div id="loader">🔍 جاري جلب البيانات من السجل...</div>
         <div id="res">
             <div id="info" class="student-info"></div>
             <table>
@@ -57,18 +57,20 @@
                 const response = await fetch(atob(csvLink));
                 const text = await response.text();
                 
-                // تنظيف الملف من أي رموز مخفية
+                // تنظيف الملف من أي رموز مخفية وتقسيم السطور
                 const cleanText = text.replace(/^\uFEFF/, "").trim();
                 const rows = cleanText.split('\n').map(r => r.split(',').map(cell => cell.trim().replace(/['"]+/g, '')));
-                const headers = rows[0];
                 
-                // البحث عن رقم الجلوس في أول عمود
+                const headers = rows[0]; // الصف الأول هو الرؤوس
+                
+                // البحث عن رقم الجلوس في أول عمود (Index 0)
                 const student = rows.find(r => r[0] == seat);
 
                 loader.style.display = "none";
 
                 if(student) {
                     resDiv.style.display = "block";
+                    // بيانات الطالب الأساسية
                     document.getElementById('info').innerHTML = `
                         <strong>الاسم:</strong> ${student[1]}<br>
                         <strong>رقم الجلوس:</strong> ${student[0]}<br>
@@ -76,7 +78,7 @@
                     `;
                     
                     let html = "";
-                    // عرض المواد من العمود الخامس (عربى) Index 4
+                    // عرض المواد بدءاً من العمود الخامس (Index 4)
                     for(let i = 4; i < headers.length; i++) {
                         if(headers[i]) {
                             let isTotal = headers[i].includes("مجموع");
@@ -85,11 +87,11 @@
                     }
                     document.getElementById('tableData').innerHTML = html;
                 } else {
-                    alert("⚠️ لم نجد رقم الجلوس " + seat + " في السجلات.");
+                    alert("⚠️ عذراً، لم نجد رقم الجلوس (" + seat + "). تأكد من كتابته بشكل صحيح.");
                 }
             } catch(e) {
                 loader.style.display = "none";
-                alert("❌ حدث خطأ في الاتصال. تأكد من ثبات الإنترنت.");
+                alert("❌ حدث خطأ في الاتصال. تأكد من أن الملف منشور (CSV) والصلاحية (مشاهد).");
             }
         }
     </script>
