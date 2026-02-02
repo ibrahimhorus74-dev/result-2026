@@ -3,99 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة نتائج الإدارة التعليمية - حصرياً</title>
+    <title>بوابة نتائج الشهادة الإعدادية - الحسينية</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f9; direction: rtl; margin: 0; padding: 0; }
-        .header { background: linear-gradient(135deg, #1a5fb4, #1e3c72); color: white; padding: 30px 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .header h1 { margin: 0; font-size: 24px; }
-        .header p { margin: 10px 0 0; opacity: 0.9; font-size: 16px; }
-        .container { max-width: 500px; margin: -30px auto 40px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; border-top: 5px solid #27ae60; }
-        input { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 20px; text-align: center; box-sizing: border-box; }
-        button { background: #27ae60; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
-        button:hover { background: #219150; transform: scale(1.01); }
-        #loading { display: none; margin-top: 15px; color: #1a5fb4; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; direction: rtl; margin: 0; padding: 0; }
+        .header { background: linear-gradient(135deg, #2c3e50, #000000); color: white; padding: 30px 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-bottom: 4px solid #d4af37; }
+        .header h1 { margin: 0; font-size: 22px; line-height: 1.6; }
+        .header .gift { color: #d4af37; font-weight: bold; margin-top: 10px; font-size: 18px; }
+        .card { max-width: 550px; margin: -20px auto 40px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; position: relative; z-index: 10; }
+        .tab-btn { background: #eee; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; transition: 0.3s; }
+        .tab-btn.active { background: #d4af37; color: black; }
+        input { width: 100%; padding: 15px; margin: 20px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 20px; text-align: center; box-sizing: border-box; }
+        button { background: #1a5fb4; color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
+        button:hover { background: #0b3d91; transform: scale(1.01); }
         #res { margin-top: 25px; display: none; text-align: right; }
-        .student-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid #1a5fb4; margin-bottom: 20px; font-size: 18px; line-height: 1.6; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+        .student-info { background: #fff9e6; padding: 15px; border-radius: 10px; border-right: 6px solid #d4af37; margin-bottom: 20px; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
         th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
-        th { background: #1a5fb4; color: white; }
-        .fail { color: #c0392b; font-weight: bold; }
+        th { background: #2c3e50; color: white; }
+        .loader { display: none; color: #1a5fb4; font-weight: bold; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>نتائج الإدارة التعليمية 2026</h1>
-        <p>بوابة مدرسة الظواهرية - استعلام حصري لـ 9000 طالب</p>
+        <h1>نتيجة الشهادة الإعدادية - إدارة الحسينية التعليمية</h1>
+        <p>استعلام حصري لـ 9000 طالب</p>
+        <div class="gift">إهداء من مدرسة الظواهرية للتعليم الأساسي 🏆</div>
     </div>
 
-    <div class="container">
-        <label style="display:block; margin-bottom:10px; font-weight:bold; color:#333;">أدخل رقم الجلوس:</label>
-        <input type="text" id="seatNumber" placeholder="اكتب الرقم هنا..." autocomplete="off">
-        <button onclick="fetchResult()">إظهار النتيجة فوراً</button>
+    <div class="card">
+        <div style="margin-bottom: 15px;">
+            <button id="btn1" class="tab-btn active" onclick="setMode(1)">صفوف النقل (الظواهرية)</button>
+            <button id="btn2" class="tab-btn" onclick="setMode(2)">الشهادة الإعدادية (الإدارة)</button>
+        </div>
+
+        <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس">
+        <button onclick="getResults()">استعلام فوري</button>
         
-        <div id="loading">⚡ جاري البحث في قاعدة بيانات الإدارة...</div>
+        <div id="loader" class="loader">🔍 جاري فحص السجلات...</div>
 
         <div id="res">
-            <div id="studentInfo" class="student-box"></div>
+            <div id="info" class="student-info"></div>
             <table>
-                <thead>
-                    <tr>
-                        <th>المادة</th>
-                        <th>الدرجة</th>
-                    </tr>
-                </thead>
-                <tbody id="resultTable"></tbody>
+                <thead><tr><th>المادة</th><th>الدرجة</th></tr></thead>
+                <tbody id="tableData"></tbody>
             </table>
-            <p style="font-size:12px; color:#777; margin-top:15px;">* ملاحظة: هذه النتائج استرشادية فقط.</p>
         </div>
     </div>
 
     <script>
-        async function fetchResult() {
-            const seat = document.getElementById('seatNumber').value.trim();
+        let mode = 1;
+        const sLink = 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHUWJ5YjV3ek85bmlNQWpiWkwyeWxUMmMzQmhPc01fRkpZUVFnRGhNMHFxaTRFMGZYc3dmWnM1ZzlRV2tHTzdoZEtYQnQyUEJ2Wi9wdWI/Z2lkPTAmc2luZ2xlPXRydWUmb3V0cHV0PWNzdi';
+
+        function setMode(m) {
+            mode = m;
+            document.getElementById('btn1').className = m === 1 ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('btn2').className = m === 2 ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('res').style.display = 'none';
+        }
+
+        async function getResults() {
+            const seat = document.getElementById('seatInput').value.trim();
+            const loader = document.getElementById('loader');
             const resDiv = document.getElementById('res');
-            const loader = document.getElementById('loading');
 
-            // الرابط المشفر (CSV) لبيانات الإدارة كاملة
-            const secret = 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHUWJ5YjV3ek85bmlNQWpiWkwyeWxUMmMzQmhPc01fRkpZUVFnRGhNMHFxaTRFMGZYc3dmWnM1ZzlRV2tHTzdoZEtYQnQyUEJ2Wi9wdWI/Z2lkPTAmc2luZ2xlPXRydWUmb3V0cHV0PWNzdi';
-
-            if(!seat) return alert("يرجى إدخال رقم الجلوس أولاً");
+            if(!seat) return alert("يرجى كتابة رقم الجلوس");
 
             loader.style.display = "block";
             resDiv.style.display = "none";
 
             try {
-                const response = await fetch(atob(secret));
-                const data = await response.text();
-                const rows = data.split('\n').map(r => r.split(','));
+                const response = await fetch(atob(sLink));
+                const text = await response.text();
+                const rows = text.split('\n').map(r => r.split(','));
                 const headers = rows[0];
-                
-                // البحث في الـ 9000 سجل
                 const student = rows.find(r => r[2] && r[2].toString().trim() === seat);
 
                 loader.style.display = "none";
 
                 if(student) {
                     resDiv.style.display = "block";
-                    document.getElementById('studentInfo').innerHTML = `
-                        <strong>الاسم:</strong> ${student[1]}<br>
-                        <strong>رقم الجلوس:</strong> ${seat}`;
-                    
-                    let rowsHtml = "";
+                    document.getElementById('info').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>رقم الجلوس:</strong> ${seat}`;
+                    let html = "";
                     for(let i = 3; i < headers.length; i++) {
-                        let sub = headers[i]?.trim();
-                        if(sub) {
-                            rowsHtml += `<tr><td>${sub}</td><td>${student[i] || '0'}</td></tr>`;
-                        }
+                        if(headers[i].trim()) html += `<tr><td>${headers[i]}</td><td>${student[i]}</td></tr>`;
                     }
-                    document.getElementById('resultTable').innerHTML = rowsHtml;
+                    document.getElementById('tableData').innerHTML = html;
                 } else {
-                    alert("رقم الجلوس غير صحيح أو لم يرفع بعد.");
+                    alert("عذراً، رقم الجلوس غير موجود.");
                 }
-            } catch (error) {
+            } catch(e) {
                 loader.style.display = "none";
-                alert("حدث خطأ أثناء تحميل البيانات، تأكد من الاتصال بالإنترنت.");
+                alert("حدث خطأ في الاتصال بالسيرفر.");
             }
         }
     </script>
