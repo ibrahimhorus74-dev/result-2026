@@ -3,56 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة نتائج مدرسة الظواهرية - الحسينية</title>
+    <title>نتيجة الشهادة الإعدادية - إدارة الحسينية</title>
     <style>
-        :root { --primary: #1a5fb4; --secondary: #27ae60; --dark: #2c3e50; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; direction: rtl; margin: 0; padding: 0; }
-        .header { background: linear-gradient(135deg, var(--dark), #111); color: white; padding: 30px 10px; text-align: center; border-bottom: 5px solid #d4af37; }
-        .gift { color: #d4af37; font-weight: bold; margin-top: 10px; font-size: 16px; border: 1px dashed #d4af37; display: inline-block; padding: 5px 20px; border-radius: 50px; background: rgba(0,0,0,0.2); }
-        
-        .main-tabs { display: flex; max-width: 500px; margin: 20px auto 0; background: #ddd; border-radius: 15px 15px 0 0; overflow: hidden; }
-        .main-tab { flex: 1; padding: 15px; cursor: pointer; text-align: center; font-weight: bold; transition: 0.3s; color: #555; }
-        .main-tab.active { background: white; color: var(--primary); border-top: 4px solid var(--primary); }
-
-        .card { max-width: 500px; margin: 0 auto 40px; background: white; padding: 25px; border-radius: 0 0 15px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        
-        /* القسم الفرعي للصف الأول والثاني */
-        #subSelector { display: none; margin-bottom: 20px; background: #f9f9f9; padding: 10px; border-radius: 10px; }
-        .sub-btn { padding: 8px 15px; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; margin: 0 5px; font-size: 14px; }
-        .sub-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); }
-
-        input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; box-sizing: border-box; }
-        button#searchBtn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; }
-        
+        .header { background: linear-gradient(135deg, #1a5fb4, #111); color: white; padding: 30px 10px; text-align: center; border-bottom: 5px solid #d4af37; }
+        .gift { color: #d4af37; font-weight: bold; margin-top: 10px; font-size: 18px; border: 1px dashed #d4af37; display: inline-block; padding: 8px 25px; border-radius: 50px; background: rgba(0,0,0,0.2); }
+        .card { max-width: 500px; margin: -20px auto 40px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        input { width: 100%; padding: 15px; margin: 15px 0 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 20px; text-align: center; box-sizing: border-box; }
+        button { background: #27ae60; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; margin-bottom: 10px; }
         #res { margin-top: 25px; display: none; text-align: right; }
-        .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid #d4af37; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; }
-        th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
-        th { background: var(--primary); color: white; }
+        .info-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid #d4af37; margin-bottom: 20px; font-size: 17px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
+        th { background: #1a5fb4; color: white; }
         .fail-grade { color: #e74c3c; font-weight: bold; background-color: #fff5f5; }
         .total-row { background: #fff9e6; font-weight: bold; color: #c0392b; }
+        .grade-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; color: white; font-size: 14px; margin-top: 5px; }
+        .excelent { background-color: #27ae60; } .very-good { background-color: #2980b9; } 
+        .good { background-color: #f39c12; } .pass { background-color: #95a5a6; } .fail { background-color: #e74c3c; }
+        .print-btn { background: #34495e; font-size: 14px; padding: 10px; }
+        @media print { .header, .card input, button, .gift { display: none; } .card { box-shadow: none; margin: 0; max-width: 100%; } }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>بوابة نتائج مدرسة الظواهرية 2026</h1>
-    <div class="gift">إدارة الحسينية التعليمية 🏆</div>
-</div>
-
-<div class="main-tabs">
-    <div id="tab3" class="main-tab active" onclick="switchMain(3)">الشهادة الإعدادية</div>
-    <div id="tab12" class="main-tab" onclick="switchMain(12)">صفوف النقل (1 و 2)</div>
+    <h1>بوابة نتائج الشهادة الإعدادية 2026</h1>
+    <div class="gift">إهداء من مدرسة الظواهرية للتعليم الأساسي 🏆</div>
 </div>
 
 <div class="card">
-    <div id="subSelector">
-        <span class="sub-btn active" onclick="setSub(1, this)">الأول الإعدادي</span>
-        <span class="sub-btn" onclick="setSub(2, this)">الثاني الإعدادي</span>
-    </div>
-
-    <input type="number" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
-    <button id="searchBtn" onclick="getResults()">بحث عن النتيجة</button>
+    <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
+    <button onclick="getResults()">عرض النتيجة الآن</button>
     
     <div id="res">
         <div id="info" class="info-box"></div>
@@ -60,54 +42,45 @@
             <thead><tr><th>المادة</th><th>الدرجة</th></tr></thead>
             <tbody id="tableBody"></tbody>
         </table>
+        <br>
+        <button class="print-btn" onclick="window.print()">طباعة الشهادة 🖨️</button>
     </div>
 </div>
 
 <script>
-    // روابط الـ CSV
-    const links = {
-        prep3: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbnUGQbyb5wzO9niMAjbZL2ylT2c3BhOsM_FJfQQgDhM0qqi4E0fXswfZs5g9QWkGO7hdKXBt2PBvZ/pub?output=csv',
-        prep1: 'رابط_csv_الصف_الأول_هنا',
-        prep2: 'رابط_csv_الصف_الثاني_هنا'
-    };
+    const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbnUGQbyb5wzO9niMAjbZL2ylT2c3BhOsM_FJfQQgDhM0qqi4E0fXswfZs5g9QWkGO7hdKXBt2PBvZ/pub?output=csv';
+    const appTitle = "رابط الشهادة الاعدادية لادارة الحسينية 2026";
 
-    let currentMode = 'prep3'; // الافتراضي شهادة إعدادية
-    const alertMsg = "بوابة نتائج الحسينية 2026";
-
-    function switchMain(val) {
-        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
-        document.getElementById('res').style.display = 'none';
-        
-        if(val === 3) {
-            currentMode = 'prep3';
-            document.getElementById('tab3').classList.add('active');
-            document.getElementById('subSelector').style.display = 'none';
-            document.getElementById('searchBtn').style.backgroundColor = '#1a5fb4';
-        } else {
-            currentMode = 'prep1'; // الافتراضي عند التحويل للنقل هو أولى إعدادي
-            document.getElementById('tab12').classList.add('active');
-            document.getElementById('subSelector').style.display = 'block';
-            document.getElementById('searchBtn').style.backgroundColor = '#27ae60';
-        }
+    function checkFail(subject, score) {
+        let val = parseFloat(score);
+        if (isNaN(val)) return false;
+        if (subject.includes("عربى") && val < 20) return true;
+        if (subject.includes("انجليزى") && val < 15) return true;
+        if (subject.includes("رياض") && val < 15) return true;
+        if (subject.includes("علوم") && val < 10) return true;
+        if (subject.includes("دراسات") && val < 10) return true;
+        return false;
     }
 
-    function setSub(grade, el) {
-        currentMode = 'prep' + grade;
-        document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        document.getElementById('res').style.display = 'none';
+    function calculateGrade(score) {
+        let total = parseFloat(score);
+        if (isNaN(total)) return { text: "", class: "" };
+        let percentage = (total / 140) * 100;
+        if (percentage >= 85) return { text: "امتياز 🌟", class: "excelent" };
+        if (percentage >= 75) return { text: "جيد جداً ✨", class: "very-good" };
+        if (percentage >= 65) return { text: "جيد 👍", class: "good" };
+        if (percentage >= 50) return { text: "مقبول 😅", class: "pass" };
+        return { text: "دون المستوى ⚠️", class: "fail" };
     }
 
     async function getResults() {
         const seat = document.getElementById('seatInput').value.trim();
         const resDiv = document.getElementById('res');
-        const url = links[currentMode];
-
-        if(!seat) return alert(alertMsg + "\n⚠️ أدخل رقم الجلوس");
-        if(url.includes('رابط_')) return alert(alertMsg + "\n⚠️ عذراً، لم يتم رفع ملفات هذا الصف بعد!");
+        
+        if(!seat) return alert(`${appTitle}\n\n⚠️ من فضلك ادخل رقم الجلوس أولاً`);
 
         try {
-            const response = await fetch(url);
+            const response = await fetch(dataUrl);
             const text = await response.text();
             const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim().replace(/^["']|["']$/g, '')));
             const headers = rows[0];
@@ -119,16 +92,28 @@
                 for(let i = 4; i < headers.length; i++) {
                     if(headers[i]) {
                         let val = student[i] || '0';
+                        let isRed = checkFail(headers[i], val);
                         let isTotal = headers[i].includes("مجموع");
-                        html += `<tr class="${isTotal ? 'total-row' : ''}"><td>${headers[i]}</td><td>${val}</td></tr>`;
+                        let tdClass = isRed ? 'class="fail-grade"' : '';
+                        
+                        if(isTotal) {
+                            let g = calculateGrade(val);
+                            html += `<tr class="total-row"><td>${headers[i]}</td><td>${val}<br><span class="grade-badge ${g.class}">${g.text}</span></td></tr>`;
+                        } else {
+                            html += `<tr><td>${headers[i]}</td><td ${tdClass}>${val}</td></tr>`;
+                        }
                     }
                 }
-                let gradeName = currentMode === 'prep3' ? 'الشهادة الإعدادية' : (currentMode === 'prep1' ? 'الأول الإعدادي' : 'الثاني الإعدادي');
-                document.getElementById('info').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>الصف:</strong> ${gradeName}<br><strong>رقم الجلوس:</strong> ${seat}`;
+                document.getElementById('info').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>المدرسة:</strong> ${student[3]}<br><strong>رقم الجلوس:</strong> ${seat}`;
                 document.getElementById('tableBody').innerHTML = html;
-            } else { alert("⚠️ رقم الجلوس غير موجود في القسم المختار."); }
-        } catch(e) { alert("❌ خطأ في الاتصال بالبيانات."); }
+            } else { 
+                alert(`${appTitle}\n\n⚠️ عذراً، لم نجد رقم الجلوس (${seat}) في سجلات الإدارة.`); 
+            }
+        } catch(e) { 
+            alert(`${appTitle}\n\n❌ فشل الاتصال بقاعدة البيانات.`); 
+        }
     }
 </script>
 </body>
 </html>
+
