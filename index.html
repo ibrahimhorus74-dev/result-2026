@@ -3,137 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نتيجة مدرسة الظواهرية</title>
+    <title>بوابة نتائج الإدارة التعليمية - حصرياً</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; direction: rtl; margin: 0; padding: 0; }
-        .header-container { background: white; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .images-row { display: flex; justify-content: space-around; align-items: center; max-width: 600px; margin: 0 auto 15px; }
-        .logo-img { height: 80px; width: auto; border-radius: 8px; }
-        .school-name { color: #2c3e50; font-size: 24px; font-weight: bold; margin: 5px 0; }
-        .result-title { color: #c0392b; font-size: 18px; font-weight: bold; margin-bottom: 10px; }
-        .card { max-width: 500px; margin: 0 auto 40px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        select, input { width: 90%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 18px; text-align: center; }
-        select { border-color: #3498db; cursor: pointer; background: #fff; width: 95%; }
-        button { background: #27ae60; color: white; border: none; padding: 12px 40px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
-        button:hover { background: #219150; }
-        #res { margin-top: 25px; display: none; }
-        #errorMsg { color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 8px; margin-top: 20px; display: none; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f9; direction: rtl; margin: 0; padding: 0; }
+        .header { background: linear-gradient(135deg, #1a5fb4, #1e3c72); color: white; padding: 30px 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header p { margin: 10px 0 0; opacity: 0.9; font-size: 16px; }
+        .container { max-width: 500px; margin: -30px auto 40px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; border-top: 5px solid #27ae60; }
+        input { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 20px; text-align: center; box-sizing: border-box; }
+        button { background: #27ae60; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
+        button:hover { background: #219150; transform: scale(1.01); }
+        #loading { display: none; margin-top: 15px; color: #1a5fb4; font-weight: bold; }
+        #res { margin-top: 25px; display: none; text-align: right; }
+        .student-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border-right: 5px solid #1a5fb4; margin-bottom: 20px; font-size: 18px; line-height: 1.6; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
         th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
-        th { background-color: #3498db; color: white; }
-        .student-info { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: right; border-right: 5px solid #3498db; line-height: 1.6; }
-        .loading { display: none; color: #3498db; font-weight: bold; margin-top: 10px; }
+        th { background: #1a5fb4; color: white; }
+        .fail { color: #c0392b; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header-container">
-        <div class="images-row">
-            <img src="flag.png" alt="علم مصر" class="logo-img">
-            <img src="school.jpg" alt="مدرسة الظواهرية" class="logo-img">
-        </div>
-        <div class="school-name">مدرسة الظواهرية للتعليم الأساسي</div>
-        <div class="result-title">نتائج الفصل الدراسي الأول - 2026</div>
+    <div class="header">
+        <h1>نتائج الإدارة التعليمية 2026</h1>
+        <p>بوابة مدرسة الظواهرية - استعلام حصري لـ 9000 طالب</p>
     </div>
 
-    <div class="card">
-        <label style="display:block; margin-bottom:8px; font-weight:bold;">اختر الصف الدراسي:</label>
-        <select id="grade">
-            <option value="1">الصف الأول الإعدادي</option>
-            <option value="2">الصف الثاني الإعدادي</option>
-        </select>
-        <input type="text" id="num" placeholder="اكتب رقم الجلوس هنا">
-        <button onclick="search()">بحث عن النتيجة</button>
-        <div id="loading" class="loading">جاري جلب النتيجة...</div>
-        <div id="errorMsg">⚠️ عذراً، رقم الجلوس غير صحيح أو غير موجود.</div>
+    <div class="container">
+        <label style="display:block; margin-bottom:10px; font-weight:bold; color:#333;">أدخل رقم الجلوس:</label>
+        <input type="text" id="seatNumber" placeholder="اكتب الرقم هنا..." autocomplete="off">
+        <button onclick="fetchResult()">إظهار النتيجة فوراً</button>
+        
+        <div id="loading">⚡ جاري البحث في قاعدة بيانات الإدارة...</div>
+
         <div id="res">
-            <div id="studentData" class="student-info"></div>
+            <div id="studentInfo" class="student-box"></div>
             <table>
-                <thead><tr><th>المادة</th><th>الدرجة والتقدير</th></tr></thead>
-                <tbody id="tableBody"></tbody>
+                <thead>
+                    <tr>
+                        <th>المادة</th>
+                        <th>الدرجة</th>
+                    </tr>
+                </thead>
+                <tbody id="resultTable"></tbody>
             </table>
+            <p style="font-size:12px; color:#777; margin-top:15px;">* ملاحظة: هذه النتائج استرشادية فقط.</p>
         </div>
     </div>
 
     <script>
-        async function search() {
-            const grade = document.getElementById('grade').value;
-            const val = document.getElementById('num').value.trim();
+        async function fetchResult() {
+            const seat = document.getElementById('seatNumber').value.trim();
             const resDiv = document.getElementById('res');
-            const errorDiv = document.getElementById('errorMsg');
             const loader = document.getElementById('loading');
 
-            const url1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5D73qMZI-_z6xXKHlVD_JEgcdrp__GCy-zkXooalXq7YbiJTVCEjsLgt89q0L_A/pub?output=csv'; 
-            const url2 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQh7eF7_FUOpgxYV21YDNQHIfyICTaqHSgh5amFkkXTpBmJdaoo-p31BuwmOzOHT7fJj8QFZVpJk8pe/pub?output=csv';
-            const targetUrl = (grade === "1") ? url1 : url2;
+            // الرابط المشفر (CSV) لبيانات الإدارة كاملة
+            const secret = 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNiblVHUWJ5YjV3ek85bmlNQWpiWkwyeWxUMmMzQmhPc01fRkpZUVFnRGhNMHFxaTRFMGZYc3dmWnM1ZzlRV2tHTzdoZEtYQnQyUEJ2Wi9wdWI/Z2lkPTAmc2luZ2xlPXRydWUmb3V0cHV0PWNzdi';
 
-            if(!val) return alert("من فضلك ادخل رقم الجلوس");
+            if(!seat) return alert("يرجى إدخال رقم الجلوس أولاً");
 
-            resDiv.style.display = "none";
-            errorDiv.style.display = "none";
             loader.style.display = "block";
+            resDiv.style.display = "none";
 
             try {
-                const resp = await fetch(targetUrl);
-                const text = await resp.text();
-                const rows = text.split('\n').map(r => r.split(','));
+                const response = await fetch(atob(secret));
+                const data = await response.text();
+                const rows = data.split('\n').map(r => r.split(','));
                 const headers = rows[0];
-                const student = rows.find(r => r[2] && r[2].toString().trim() === val);
+                
+                // البحث في الـ 9000 سجل
+                const student = rows.find(r => r[2] && r[2].toString().trim() === seat);
 
                 loader.style.display = "none";
 
                 if(student) {
                     resDiv.style.display = "block";
-                    document.getElementById('studentData').innerHTML = `
+                    document.getElementById('studentInfo').innerHTML = `
                         <strong>الاسم:</strong> ${student[1]}<br>
-                        <strong>الصف:</strong> ${grade == "1" ? "الأول الإعدادي" : "الثاني الإعدادي"}<br>
-                        <strong>رقم الجلوس:</strong> ${val}`;
+                        <strong>رقم الجلوس:</strong> ${seat}`;
                     
-                    let content = "";
+                    let rowsHtml = "";
                     for(let i = 3; i < headers.length; i++) {
-                        let headerName = headers[i] ? headers[i].trim() : "";
-                        if(headerName !== "") {
-                            let degree = parseFloat(student[i]);
-                            let estimation = "";
-                            let textColor = "#2c3e50"; 
-                            let rowStyle = ""; 
-
-                            if (isNaN(degree)) {
-                                estimation = "غائب";
-                                textColor = "#7f8c8d";
-                            } 
-                            // حساب المجموع الكلي (من 500)
-                            else if (headerName.includes("المجموع")) {
-                                if (degree >= 450) { estimation = "ممتاز"; textColor = "#1a5fb4"; }
-                                else if (degree >= 400) { estimation = "جيد جداً"; textColor = "#26a269"; }
-                                else if (degree >= 325) { estimation = "جيد"; textColor = "#d4a017"; }
-                                else if (degree >= 250) { estimation = "مقبول"; textColor = "#855e42"; }
-                                else { estimation = "ضعيف"; textColor = "white"; rowStyle = "background-color: #c0392b !important;"; }
-                            }
-                            // حساب المواد العادية (من 100)
-                            else {
-                                if (degree >= 85) { estimation = "ممتاز"; textColor = "#1a5fb4"; }
-                                else if (degree >= 75) { estimation = "جيد جداً"; textColor = "#26a269"; }
-                                else if (degree >= 65) { estimation = "جيد"; textColor = "#d4a017"; }
-                                else if (degree >= 50) { estimation = "مقبول"; textColor = "#855e42"; }
-                                else { estimation = "ضعيف"; textColor = "white"; rowStyle = "background-color: #c0392b !important;"; }
-                            }
-
-                            content += `<tr style="${rowStyle}">
-                                <td style="font-weight: bold; ${rowStyle?'color:white':''}">${headerName}</td>
-                                <td style="color: ${textColor}; font-weight: bold;">
-                                    ${student[i]} <span style="font-size: 0.8em; margin-right: 8px;">[${estimation}]</span>
-                                </td>
-                            </tr>`;
+                        let sub = headers[i]?.trim();
+                        if(sub) {
+                            rowsHtml += `<tr><td>${sub}</td><td>${student[i] || '0'}</td></tr>`;
                         }
                     }
-                    document.getElementById('tableBody').innerHTML = content;
+                    document.getElementById('resultTable').innerHTML = rowsHtml;
                 } else {
-                    errorDiv.style.display = "block";
+                    alert("رقم الجلوس غير صحيح أو لم يرفع بعد.");
                 }
-            } catch(e) { 
+            } catch (error) {
                 loader.style.display = "none";
-                alert("حدث خطأ في جلب البيانات، يرجى المحاولة لاحقاً."); 
+                alert("حدث خطأ أثناء تحميل البيانات، تأكد من الاتصال بالإنترنت.");
             }
         }
     </script>
