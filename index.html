@@ -13,8 +13,7 @@
         .tab-btn { background: #f0f0f0; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; margin: 5px; color: #555; }
         .tab-btn.active { background: #1a5fb4; color: white; }
         input { width: 100%; padding: 15px; margin: 25px 0; border: 2px solid #eee; border-radius: 12px; font-size: 20px; text-align: center; box-sizing: border-box; }
-        button.search-btn { background: #27ae60; color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-size: 19px; font-weight: bold; width: 100%; transition: 0.3s; }
-        button.search-btn:hover { background: #219150; }
+        button.search-btn { background: #27ae60; color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-size: 19px; font-weight: bold; width: 100%; }
         #res { margin-top: 30px; display: none; text-align: right; }
         .student-info { background: #f8f9fa; padding: 20px; border-radius: 15px; border-right: 8px solid #d4af37; margin-bottom: 25px; font-size: 18px; line-height: 1.8; }
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
@@ -40,7 +39,7 @@
         <input type="text" id="seatInput" placeholder="أدخل رقم الجلوس هنا">
         <button class="search-btn" onclick="getResults()">عرض النتيجة الآن</button>
         
-        <div id="loader" class="loader">🔍 جاري استخراج بيانات الطالب...</div>
+        <div id="loader" class="loader">🔍 جاري فحص قاعدة البيانات...</div>
 
         <div id="res">
             <div id="info" class="student-info"></div>
@@ -67,4 +66,49 @@
             const loader = document.getElementById('loader');
             const resDiv = document.getElementById('res');
 
-            if(!seat) return
+            if(!seat) return alert("يرجى كتابة رقم الجلوس");
+            loader.style.display = "block";
+            resDiv.style.display = "none";
+
+            try {
+                const response = await fetch(atob(sLink));
+                const text = await response.text();
+                
+                // تنظيف الملف من الرموز المخفية في البداية (BOM)
+                const cleanText = text.replace(/^\uFEFF/, "");
+                const rows = cleanText.split('\n').map(r => r.split(',').map(cell => cell.trim()));
+                const headers = rows[0];
+                
+                // بحث ذكي يتجاوز أي رموز في أول عمود
+                const student = rows.find(r => r[0].replace(/[^0-9]/g, '') === seat.replace(/[^0-9]/g, ''));
+
+                loader.style.display = "none";
+
+                if(student) {
+                    resDiv.style.display = "block";
+                    document.getElementById('info').innerHTML = `
+                        <strong>الاسم:</strong> ${student[1]}<br>
+                        <strong>رقم الجلوس:</strong> ${student[0]}<br>
+                        <strong>الإدارة:</strong> ${student[2]} | <strong>المدرسة:</strong> ${student[3]}
+                    `;
+                    
+                    let html = "";
+                    for(let i = 4; i < headers.length; i++) {
+                        let subName = headers[i];
+                        if(subName) {
+                            let isTotal = subName.includes("مجموع");
+                            html += `<tr class="${isTotal ? 'total-row' : ''}"><td><b>${subName}</b></td><td>${student[i] || '0'}</td></tr>`;
+                        }
+                    }
+                    document.getElementById('tableData').innerHTML = html;
+                } else {
+                    alert("⚠️ رقم الجلوس (" + seat + ") غير موجود في ملف الشهادة.");
+                }
+            } catch(e) {
+                loader.style.display = "none";
+                alert("❌ حدث خطأ، تأكد أنك قمت بعمل Publish بصيغة CSV.");
+            }
+        }
+    </script>
+</body>
+</html>
