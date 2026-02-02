@@ -92,3 +92,20 @@
                         let isTotal = headers[i].includes("مجموع");
                         
                         let tdClass = isRed ? 'class="fail-grade"' : '';
+                        
+                        if(isTotal) {
+                            let g = calculateGrade(val);
+                            html += `<tr class="total-row"><td>${headers[i]}</td><td>${val}<br><span class="grade-badge ${g.class}">${g.text}</span></td></tr>`;
+                        } else {
+                            html += `<tr><td>${headers[i]}</td><td ${tdClass}>${val}</td></tr>`;
+                        }
+                    }
+                }
+                document.getElementById('info').innerHTML = `<strong>الاسم:</strong> ${student[1]}<br><strong>المدرسة:</strong> ${student[3]}`;
+                document.getElementById('tableBody').innerHTML = html;
+            } else { alert("رقم الجلوس غير موجود"); }
+        } catch(e) { alert("خطأ في الاتصال"); }
+    }
+</script>
+</body>
+</html>
